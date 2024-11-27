@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=3 uid="uid://unrxlwdu170"]
 
-[ext_resource type="Texture2D" uid="uid://cbw7j851kawpy" path="res://images/smallsesameball.png" id="1_tg8bt"]
-[ext_resource type="Texture2D" uid="uid://d2g585c1du0r4" path="res://images/smallsesameball_sq.png" id="2_hj5bs"]
-[ext_resource type="Texture2D" uid="uid://82olq5kicnbb" path="res://images/largesesameball.png" id="2_lvn30"]
-[ext_resource type="Texture2D" uid="uid://cobaeni5n52g6" path="res://images/chivedumpling.png" id="3_ebtc3"]
+[ext_resource type="Texture2D" uid="uid://cbw7j851kawpy" path="res://images/smallsesame.png" id="1_tg8bt"]
+[ext_resource type="Texture2D" uid="uid://d2g585c1du0r4" path="res://images/smallsesame_sq.png" id="2_hj5bs"]
+[ext_resource type="Texture2D" uid="uid://8n1ck68t34y6" path="res://images/largesesame_sq.png" id="3_wolko"]
+[ext_resource type="Texture2D" uid="uid://b05veub2utk4p" path="res://images/chive_sq.png" id="4_wy32f"]
 
 [sub_resource type="GDScript" id="GDScript_pa3jy"]
 script/source = "#the menubuttons should show choices left to right, or in a grid, but whatever
@@ -38,7 +38,7 @@ var items: Array[Array] = []
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	for n in num_players:
-		items.append([0,0,0,0,0,0,0,0,0])
+		items.append([0,0,0,0,0,0,0,0,0]) # watch out this is a shallow copy. see the abandoned mahjong for more on this.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -63,6 +63,11 @@ script/source = "extends MenuButton
 const bowl_index = 0
 var current_item = 0
 
+# should these be exports in the main scene instead?
+var smallsesame_image = preload(\"res://images/smallsesame.png\")
+var largesesame_image = preload(\"res://images/largesesame.png\")
+var chive_image = preload(\"res://images/chive.png\")
+
 signal food_taken(bowl:int,taken:int,revealed:int)
 
 # Called when the node enters the scene tree for the first time.
@@ -75,8 +80,16 @@ func _process(delta: float) -> void:
 	pass
 
 func _on_item_menu_pressed(id: int):
-	print(\"Bowl \", bowl_index, \" Index \", id , \" selected\")
+	print(\"Bowl \", bowl_index, \" was \", current_item , \" now \", id)
 	food_taken.emit(bowl_index,current_item,id)
+	current_item = id
+	match id:
+		0:
+			set_button_icon(smallsesame_image)
+		1:
+			set_button_icon(largesesame_image)
+		2:
+			set_button_icon(chive_image)
 "
 
 [node name="Control" type="Control"]
@@ -89,15 +102,6 @@ grow_vertical = 2
 script = SubResource("GDScript_pa3jy")
 metadata/_edit_lock_ = true
 
-[node name="OptionButton ignore" type="OptionButton" parent="."]
-layout_mode = 0
-offset_left = 158.0
-offset_top = 129.0
-offset_right = 190.0
-offset_bottom = 149.0
-theme_override_icons/icon = ExtResource("1_tg8bt")
-icon_alignment = 2
-
 [node name="MenuButton" type="MenuButton" parent="."]
 layout_mode = 0
 offset_left = 772.0
@@ -109,11 +113,14 @@ expand_icon = true
 switch_on_hover = true
 item_count = 3
 popup/item_0/icon = ExtResource("2_hj5bs")
-popup/item_1/icon = ExtResource("2_lvn30")
+popup/item_1/icon = ExtResource("3_wolko")
 popup/item_1/id = 1
-popup/item_2/icon = ExtResource("3_ebtc3")
+popup/item_2/icon = ExtResource("4_wy32f")
 popup/item_2/id = 2
 script = SubResource("GDScript_1dx7h")
+popup/item_1/icon = ExtResource("3_wolko")
+popup/item_0/icon = ExtResource("2_hj5bs")
+popup/item_2/icon = ExtResource("4_wy32f")
 metadata/bowl_index = 0
 metadata/current_item = 0
 

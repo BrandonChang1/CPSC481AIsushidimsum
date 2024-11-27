@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://82olq5kicnbb"
-path="res://.godot/imported/largesesameball.png-2a165f94f638d44f17a3a06b8706b382.ctex"
+uid="uid://b05veub2utk4p"
+path="res://.godot/imported/chive_sq.png-078f21dc4bf1ad4894b1ff95538faa94.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/largesesameball.png"
-dest_files=["res://.godot/imported/largesesameball.png-2a165f94f638d44f17a3a06b8706b382.ctex"]
+source_file="res://images/chive_sq.png"
+dest_files=["res://.godot/imported/chive_sq.png-078f21dc4bf1ad4894b1ff95538faa94.ctex"]
 
 [params]
 

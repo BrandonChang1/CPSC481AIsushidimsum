@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cbw7j851kawpy"
-path="res://.godot/imported/smallsesameball.png-b06107a2ff872b78bf176f12bf1ce5d5.ctex"
+uid="uid://d2g585c1du0r4"
+path="res://.godot/imported/smallsesame_sq.png-270818751d43ab67c16d471d63451c37.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/smallsesameball.png"
-dest_files=["res://.godot/imported/smallsesameball.png-b06107a2ff872b78bf176f12bf1ce5d5.ctex"]
+source_file="res://images/smallsesame_sq.png"
+dest_files=["res://.godot/imported/smallsesame_sq.png-270818751d43ab67c16d471d63451c37.ctex"]
 
 [params]
 
