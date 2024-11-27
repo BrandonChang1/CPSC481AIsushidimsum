@@ -10,6 +10,20 @@ script/source = "#the menubuttons should show choices left to right, or in a gri
 #make a large dining table for the background
 extends Control
 
+enum {
+	small_sesame,
+	large_sesame,
+	chive,
+	egg,
+	shrimp,
+	turnip,
+	shumai,
+	steamed,
+	chopsticks
+}
+
+
+var max = [0,0,0,0,0,0,0,0,0]
 var max_small_sesame = 0
 var max_large_sesame = 0
 var max_chive = 0
@@ -38,6 +52,32 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+
+
+func _on_menu_button_food_taken(bowl: Variant, taken: Variant, revealed: Variant) -> void:
+	match taken:
+		small_sesame:
+			max[0] += 1
+		large_sesame:
+			max_large_sesame += 1
+		chive:
+			max_large_sesame += 1
+		egg:
+			max_large_sesame += 1
+		shrimp:
+			max_large_sesame += 1
+		turnip:
+			max_large_sesame += 1
+		shumai:
+			max_shumai += 1
+		steamed:
+			max_steamed += 1
+		chopsticks:
+			max_chopsticks += 1
+	print_status()
+
+func print_status() -> void:
+	print(max)
 "
 
 [sub_resource type="GDScript" id="GDScript_1dx7h"]
@@ -60,7 +100,6 @@ func _process(delta: float) -> void:
 func _on_item_menu_pressed(id: int):
 	print(\"Bowl \", bowl_index, \" Index \", id , \" selected\")
 	food_taken.emit(bowl_index,current_item,id)
-	
 "
 
 [node name="Control" type="Control"]
@@ -121,3 +160,5 @@ offset_left = 364.0
 offset_top = 364.0
 offset_right = 404.0
 offset_bottom = 387.0
+
+[connection signal="food_taken" from="MenuButton" to="." method="_on_menu_button_food_taken"]
