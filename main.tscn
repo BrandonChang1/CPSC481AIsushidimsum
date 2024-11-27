@@ -22,31 +22,25 @@ enum {
 	chopsticks
 }
 
+enum {
+	player1,
+	player2,
+	#player3,
+	#player4,
+	#player5,
+	#player6
+}
 
-var max = [0,0,0,0,0,0,0,0,0]
-var max_small_sesame = 0
-var max_large_sesame = 0
-var max_chive = 0
-var max_egg = 0
-var max_shrimp = 0
-var max_turnip = 0
-var max_shumai = 0
-var max_steamed = 0
-var max_chopsticks = 0
+const num_players = 2
+var curr_turn = 0
 
-var min_small_sesame = 0
-var min_large_sesame = 0
-var min_chive = 0
-var min_egg = 0
-var min_shrimp = 0
-var min_turnip = 0
-var min_shumai = 0
-var min_steamed = 0
-var min_chopsticks = 0
+const slots = [0,0,0,0,0,0,0,0,0]
+var items: Array[Array] = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	for n in num_players:
+		items.append(slots)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -54,30 +48,12 @@ func _process(delta: float) -> void:
 	pass
 
 
-func _on_menu_button_food_taken(bowl: Variant, taken: Variant, revealed: Variant) -> void:
-	match taken:
-		small_sesame:
-			max[0] += 1
-		large_sesame:
-			max_large_sesame += 1
-		chive:
-			max_large_sesame += 1
-		egg:
-			max_large_sesame += 1
-		shrimp:
-			max_large_sesame += 1
-		turnip:
-			max_large_sesame += 1
-		shumai:
-			max_shumai += 1
-		steamed:
-			max_steamed += 1
-		chopsticks:
-			max_chopsticks += 1
+func _on_menu_button_food_taken(bowl: int, taken: int, revealed: int) -> void:
+	items[curr_turn][taken] += 1
 	print_status()
 
 func print_status() -> void:
-	print(max)
+	print(items)
 "
 
 [sub_resource type="GDScript" id="GDScript_1dx7h"]
@@ -86,7 +62,7 @@ script/source = "extends MenuButton
 const bowl_index = 0
 var current_item = 0
 
-signal food_taken(bowl,taken,revealed)
+signal food_taken(bowl:int,taken:int,revealed:int)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
