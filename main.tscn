@@ -24,8 +24,7 @@ enum {
 	shrimp,
 	turnip,
 	shumai,
-	steamed,
-	chopsticks
+	steamed
 }
 
 enum {
@@ -39,19 +38,19 @@ enum {
 
 const num_players = 2
 var curr_turn = 0
-var items: Array[Array] = []
+var player_foods: Array[Array] = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	for n in num_players:
-		items.append([0,0,0,0,0,0,0,0,0]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
+		player_foods.append([0,0,0,0,0,0,0,0]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
 
 func _on_menu_button_food_taken(bowl: int, taken: int, revealed: int) -> void:
-	items[curr_turn][taken] += 1
+	player_foods[curr_turn][taken] += 1
 	# make new function that does the following: increment the appropriate item, updates the counter. counter needs to be in lockstep with the array variable. and also calculate poitn value.
 	print_status()
 
@@ -59,7 +58,7 @@ func counter_update() -> void:
 	pass
 
 func print_status() -> void:
-	print(items)
+	print(player_foods)
 
 func inc_turn() -> void:
 	curr_turn += 1
@@ -77,6 +76,12 @@ var current_item = 0
 var smallsesame_image = preload(\"res://images/smallsesame.png\")
 var largesesame_image = preload(\"res://images/largesesame.png\")
 var chive_image = preload(\"res://images/chive.png\")
+var egg_image = preload(\"res://images/egg.png\")
+var shrimp_image = preload(\"res://images/shrimp.png\")
+var turnip_image = preload(\"res://images/turnip.png\")
+var shumai_image = preload(\"res://images/shumai.png\")
+var steamed_image = preload(\"res://images/steamed.png\")
+
 
 signal food_taken(bowl:int,taken:int,revealed:int)
 
@@ -100,6 +105,16 @@ func _on_item_menu_pressed(id: int):
 			set_button_icon(largesesame_image)
 		2:
 			set_button_icon(chive_image)
+		3:
+			set_button_icon(egg_image)
+		4:
+			set_button_icon(shrimp_image)
+		5:
+			set_button_icon(turnip_image)
+		6:
+			set_button_icon(shumai_image)
+		7:
+			set_button_icon(steamed_image)
 "
 
 [node name="Control" type="Control"]
@@ -146,62 +161,6 @@ popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
 script = SubResource("GDScript_1dx7h")
-popup/item_1/icon = ExtResource("3_wolko")
-popup/item_0/icon = ExtResource("2_hj5bs")
-popup/item_2/icon = ExtResource("4_wy32f")
-popup/item_0/text = "Small Sesame Ball"
-popup/item_0/checkable = 0
-popup/item_0/checked = false
-popup/item_0/id = 0
-popup/item_0/disabled = false
-popup/item_0/separator = false
-popup/item_1/text = "Large Sesame Ball"
-popup/item_1/checkable = 0
-popup/item_1/checked = false
-popup/item_1/id = 1
-popup/item_1/disabled = false
-popup/item_1/separator = false
-popup/item_2/text = "Chive Dumpling"
-popup/item_2/checkable = 0
-popup/item_2/checked = false
-popup/item_2/id = 2
-popup/item_2/disabled = false
-popup/item_2/separator = false
-popup/item_3/icon = ExtResource("4_fhocb")
-popup/item_3/text = "Egg Tart"
-popup/item_3/checkable = 0
-popup/item_3/checked = false
-popup/item_3/id = 3
-popup/item_3/disabled = false
-popup/item_3/separator = false
-popup/item_4/icon = ExtResource("5_82ukx")
-popup/item_4/text = "Shrimp Dumpling"
-popup/item_4/checkable = 0
-popup/item_4/checked = false
-popup/item_4/id = 4
-popup/item_4/disabled = false
-popup/item_4/separator = false
-popup/item_5/icon = ExtResource("6_l42ue")
-popup/item_5/text = "Turnip Cake"
-popup/item_5/checkable = 0
-popup/item_5/checked = false
-popup/item_5/id = 5
-popup/item_5/disabled = false
-popup/item_5/separator = false
-popup/item_6/icon = ExtResource("7_q68mw")
-popup/item_6/text = "Shumai Dumpling"
-popup/item_6/checkable = 0
-popup/item_6/checked = false
-popup/item_6/id = 6
-popup/item_6/disabled = false
-popup/item_6/separator = false
-popup/item_7/icon = ExtResource("8_k300g")
-popup/item_7/text = "Steamed Bun"
-popup/item_7/checkable = 0
-popup/item_7/checked = false
-popup/item_7/id = 7
-popup/item_7/disabled = false
-popup/item_7/separator = false
 metadata/bowl_index = 0
 metadata/current_item = 0
 
