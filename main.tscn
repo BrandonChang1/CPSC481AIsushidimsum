@@ -7,7 +7,7 @@
 
 [sub_resource type="GDScript" id="GDScript_pa3jy"]
 script/source = "#the menubuttons should show choices left to right, or in a grid, but whatever
-
+#make a large dining table for the background
 extends Control
 
 var max_small_sesame = 0
@@ -44,6 +44,9 @@ func _process(delta: float) -> void:
 script/source = "extends MenuButton
 
 const bowl_index = 0
+var current_item = 0
+
+signal food_taken(bowl,taken,revealed)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -56,6 +59,8 @@ func _process(delta: float) -> void:
 
 func _on_item_menu_pressed(id: int):
 	print(\"Bowl \", bowl_index, \" Index \", id , \" selected\")
+	food_taken.emit(bowl_index,current_item,id)
+	
 "
 
 [node name="Control" type="Control"]
@@ -93,6 +98,8 @@ popup/item_1/id = 1
 popup/item_2/icon = ExtResource("3_ebtc3")
 popup/item_2/id = 2
 script = SubResource("GDScript_1dx7h")
+metadata/bowl_index = 0
+metadata/current_item = 0
 
 [node name="MaxSmallSesameCounter" type="Label" parent="."]
 layout_mode = 0
