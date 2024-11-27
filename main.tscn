@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://unrxlwdu170"]
+[gd_scene load_steps=7 format=3 uid="uid://unrxlwdu170"]
 
 [ext_resource type="Texture2D" uid="uid://cbw7j851kawpy" path="res://images/smallsesameball.png" id="1_tg8bt"]
+[ext_resource type="Texture2D" uid="uid://d2g585c1du0r4" path="res://images/smallsesameball_sq.png" id="2_hj5bs"]
 [ext_resource type="Texture2D" uid="uid://82olq5kicnbb" path="res://images/largesesameball.png" id="2_lvn30"]
 [ext_resource type="Texture2D" uid="uid://cobaeni5n52g6" path="res://images/chivedumpling.png" id="3_ebtc3"]
 
@@ -9,6 +10,25 @@ script/source = "#the menubuttons should show choices left to right, or in a gri
 
 extends Control
 
+var max_small_sesame = 0
+var max_large_sesame = 0
+var max_chive = 0
+var max_egg = 0
+var max_shrimp = 0
+var max_turnip = 0
+var max_shumai = 0
+var max_steamed = 0
+var max_chopsticks = 0
+
+var min_small_sesame = 0
+var min_large_sesame = 0
+var min_chive = 0
+var min_egg = 0
+var min_shrimp = 0
+var min_turnip = 0
+var min_shumai = 0
+var min_steamed = 0
+var min_chopsticks = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -18,6 +38,24 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+"
+
+[sub_resource type="GDScript" id="GDScript_1dx7h"]
+script/source = "extends MenuButton
+
+const bowl_index = 0
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	self.get_popup().id_pressed.connect(_on_item_menu_pressed)
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+
+func _on_item_menu_pressed(id: int):
+	print(\"Bowl \", bowl_index, \" Index \", id , \" selected\")
 "
 
 [node name="Control" type="Control"]
@@ -49,8 +87,30 @@ theme_override_icons/icon = ExtResource("1_tg8bt")
 expand_icon = true
 switch_on_hover = true
 item_count = 3
-popup/item_0/icon = ExtResource("1_tg8bt")
+popup/item_0/icon = ExtResource("2_hj5bs")
 popup/item_1/icon = ExtResource("2_lvn30")
 popup/item_1/id = 1
 popup/item_2/icon = ExtResource("3_ebtc3")
 popup/item_2/id = 2
+script = SubResource("GDScript_1dx7h")
+
+[node name="MaxSmallSesameCounter" type="Label" parent="."]
+layout_mode = 0
+offset_left = 364.0
+offset_top = 283.0
+offset_right = 457.0
+offset_bottom = 341.0
+
+[node name="MaxLargeSesameCounter" type="Label" parent="."]
+layout_mode = 0
+offset_left = 350.0
+offset_top = 590.0
+offset_right = 390.0
+offset_bottom = 613.0
+
+[node name="MaxChiveCounter" type="Label" parent="."]
+layout_mode = 0
+offset_left = 364.0
+offset_top = 364.0
+offset_right = 404.0
+offset_bottom = 387.0
