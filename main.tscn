@@ -33,20 +33,16 @@ enum {
 
 const num_players = 2
 var curr_turn = 0
-
-const slots = [0,0,0,0,0,0,0,0,0]
 var items: Array[Array] = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	for n in num_players:
-		items.append(slots)
-
+		items.append([0,0,0,0,0,0,0,0,0])
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
-
 
 func _on_menu_button_food_taken(bowl: int, taken: int, revealed: int) -> void:
 	items[curr_turn][taken] += 1
@@ -54,6 +50,11 @@ func _on_menu_button_food_taken(bowl: int, taken: int, revealed: int) -> void:
 
 func print_status() -> void:
 	print(items)
+
+func inc_turn() -> void:
+	curr_turn += 1
+	if curr_turn == num_players:
+		curr_turn = 0
 "
 
 [sub_resource type="GDScript" id="GDScript_1dx7h"]
