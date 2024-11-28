@@ -12,3 +12,10 @@ func _process(delta: float) -> void:
 
 func rotate(degrees: int) -> void:
 	self.set_rotation_degrees(self.get_rotation_degrees() + degrees)
+
+func update(count:int) -> void:
+	self.clear()
+	if count > 0:
+		self.add_image(chopsticks_image)
+	if count > 1:
+		self.add_text(" ", str(count))
