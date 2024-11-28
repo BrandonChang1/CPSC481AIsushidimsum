@@ -23,10 +23,8 @@ var chopsticks = []
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
 var rotation_degrees_remaining:int = 0
 # should add more logic to this. 0th element is distance from each bowl to player1, etc. if only 2 player, other player always has 3 - current
-var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]]
+var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # seeded with the starting distances. need as many elements as there are players.
 var chopsticks_count = [0, 0, 0, 0, 0, 0]
-var chopsticks_image = preload(\"res://images/chopsticks.png\")
-var all_ready = false
 
 enum {
 	small_sesame,
@@ -49,15 +47,15 @@ enum {
 }
 
 const num_players = 2
-var curr_turn = 0
+var current_player = 0
 var player_foods: Array[Array] = []
 
-var autoturn = false
+var autoturn:bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	var chop_test = get_node(\"Chopstick0\")
-	chop_test.add_image(chopsticks_image)
+	# chop_test.add_image(chopsticks_image)
 	
 	for n in num_players:
 		player_foods.append([0,0,0,0,0,0,0,0]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
@@ -78,7 +76,7 @@ func _process(delta: float) -> void:
 		rotation_degrees_remaining -= 2
 
 func _on_menu_button_food_taken(bowl: int, taken: int, revealed: int) -> void:
-	player_foods[curr_turn][taken] += 1
+	player_foods[current_player][taken] += 1
 	# make new function that does the following: increment the appropriate item, updates the counter. counter needs to be in lockstep with the array variable. and also calculate poitn value.
 	print_status()
 
@@ -89,10 +87,10 @@ func print_status() -> void:
 	print(player_foods)
 
 func inc_turn() -> void:
-	curr_turn += 1
-	if curr_turn == num_players:
-		curr_turn = 0
-	print(\"now turn for player \", (curr_turn + 1))
+	current_player += 1
+	if current_player == num_players:
+		current_player = 0
+	print(\"now turn for player \", (current_player + 1))
 
 
 func _on_button_pressed(arg1:String) -> void:
@@ -109,8 +107,9 @@ func rotate_board(distance:int) -> void:
 		var temp:int
 	
 		rotation_degrees_remaining += 60 * distance
+		distances[current_player].find(0)
 		
-		for n in distances:
+		for n in num_players:	# somehow have to do num_players and not distances. too many iterations when use distances.
 			if distance < 0:
 				temp = distances[n].pop_back()
 				distances[n].push_front(temp)
@@ -118,7 +117,7 @@ func rotate_board(distance:int) -> void:
 				temp = distances[n].pop_front()
 				distances[n].push_back(temp)
 		
-		print(distances)
+		print(\"Distances: \", distances)
 
 func add_chopstick(index:int) -> void:
 	chopsticks_count[index] += 1
