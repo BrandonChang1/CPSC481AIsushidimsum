@@ -24,7 +24,7 @@ var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5
 var rotation_degrees_remaining:int = 0
 var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # should add more logic to this. 0th element is distance from each bowl to player1, etc
 var chopsticks = [0, 0, 0, 0, 0, 0]
-
+var chopsticks_image = preload(\"res://images/chopsticks.png\")
 var all_ready = false
 
 enum {
@@ -55,6 +55,9 @@ var autoturn = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	var chop_test = get_node(\"RichTextLabel\")
+	chop_test.add_image(chopsticks_image)
+	
 	for n in num_players:
 		player_foods.append([0,0,0,0,0,0,0,0]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
 	
@@ -75,12 +78,11 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if all_ready:
-		if rotation_degrees_remaining != 0:
-			get_tree().call_group(\"rotators\", \"rotate\", 2)
-			#for n in 6:
-				#bowls[n].set_rotation_degrees(bowls[n].get_rotation_degrees() + 2)
-			rotation_degrees_remaining -= 2
+	if rotation_degrees_remaining != 0:
+		get_tree().call_group(\"rotators\", \"rotate\", 2)
+		#for n in 6:
+			#bowls[n].set_rotation_degrees(bowls[n].get_rotation_degrees() + 2)
+		rotation_degrees_remaining -= 2
 
 func _on_menu_button_food_taken(bowl: int, taken: int, revealed: int) -> void:
 	player_foods[curr_turn][taken] += 1
@@ -435,8 +437,11 @@ script = ExtResource("12_1jv5p")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 584.0
+offset_top = 528.0
+offset_right = 696.0
+offset_bottom = 640.0
+theme_override_font_sizes/normal_font_size = 32
 text = "0"
 
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
