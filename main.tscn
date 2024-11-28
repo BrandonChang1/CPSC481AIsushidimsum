@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://unrxlwdu170"]
+[gd_scene load_steps=13 format=3 uid="uid://unrxlwdu170"]
 
 [ext_resource type="Texture2D" uid="uid://cbw7j851kawpy" path="res://images/smallsesame.png" id="1_tg8bt"]
 [ext_resource type="Texture2D" uid="uid://d2g585c1du0r4" path="res://images/smallsesame_sq.png" id="2_hj5bs"]
@@ -9,7 +9,6 @@
 [ext_resource type="Texture2D" uid="uid://csckvcl4ludgf" path="res://images/turnip_sq.png" id="6_l42ue"]
 [ext_resource type="Texture2D" uid="uid://evusbtpc7po4" path="res://images/shumai_sq.png" id="7_q68mw"]
 [ext_resource type="Texture2D" uid="uid://bvevxkj6ufquj" path="res://images/steamed_sq.png" id="8_k300g"]
-[ext_resource type="Texture2D" uid="uid://b6gdt01u6d75l" path="res://images/chopsticks.png" id="10_3l2kh"]
 [ext_resource type="Script" path="res://bowl.gd" id="10_m761y"]
 [ext_resource type="Script" path="res://chopstick.gd" id="12_1jv5p"]
 
@@ -20,10 +19,11 @@ script/source = "#the menubuttons should show choices left to right, or in a gri
 extends Control
 
 var bowls = []
+var chopsticks = []
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
 var rotation_degrees_remaining:int = 0
 var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # should add more logic to this. 0th element is distance from each bowl to player1, etc
-var chopsticks = [0, 0, 0, 0, 0, 0]
+var chopsticks_count = [0, 0, 0, 0, 0, 0]
 var chopsticks_image = preload(\"res://images/chopsticks.png\")
 var all_ready = false
 
@@ -55,26 +55,18 @@ var autoturn = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	var chop_test = get_node(\"RichTextLabel\")
+	var chop_test = get_node(\"Chopstick0\")
 	chop_test.add_image(chopsticks_image)
 	
 	for n in num_players:
 		player_foods.append([0,0,0,0,0,0,0,0]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
 	
-	var bowl0 = $Bowl0
-	var bowl1 = $Bowl1
-	var bowl2 = $Bowl2
-	var bowl3 = $Bowl3
-	var bowl4 = $Bowl4
-	var bowl5 = $Bowl5
-	bowls = [bowl0, bowl1, bowl2, bowl3, bowl4, bowl5]
+	bowls = [$Bowl0, $Bowl1, $Bowl2, $Bowl3, $Bowl4, $Bowl5]
+	chopsticks = [$Chopstick0, $Chopstick1, $Chopstick2, $Chopstick3, $Chopstick4, $Chopstick5]
+	
 	for n in 6:
 		bowls[n].set_rotation(rotations_start[n])
-	# print(get_tree().get_nodes_in_group(\"rotators\"))
-	all_ready = true	# not sure if this is even necessary
-	
-	
-	
+		chopsticks[n].set_rotation(rotations_start[n])
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -113,9 +105,22 @@ func _on_button_pressed(arg1:String) -> void:
 		rotate_board(1)
 
 func rotate_board(distance:int) -> void:
+		var temp:int
+	
 		rotation_degrees_remaining += 60 * distance
-		chopsticks[distances[curr_turn].find(0)] += 1
-			
+		
+		for n in distances:
+			if distance < 0:
+				temp = distances[n].pop_back()
+				distances[n].push_front(temp)
+			if distance > 0:
+				temp = distances[n].pop_front()
+				distances[n].push_back(temp)
+		
+		print(distances)
+
+func add_chopstick(index:int) -> void:
+	chopsticks_count[index] += 1
 
 func _on_check_box_toggled(toggled_on: bool) -> void:
 	autoturn = toggled_on
@@ -425,24 +430,60 @@ offset_right = 1115.0
 offset_bottom = 942.0
 text = "Clockwise"
 
-[node name="Chopstick0" type="TextureRect" parent="." groups=["chopsticks", "rotators"]]
+[node name="Chopstick0" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 824.0
+offset_left = 808.0
 offset_top = 256.0
-offset_right = 912.0
-offset_bottom = 344.0
-pivot_offset = Vector2(40, 288)
-texture = ExtResource("10_3l2kh")
+offset_right = 920.0
+offset_bottom = 368.0
+pivot_offset = Vector2(56, 288)
+theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
-layout_mode = 0
-offset_left = 584.0
-offset_top = 528.0
-offset_right = 696.0
-offset_bottom = 640.0
+[node name="Chopstick1" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
+offset_left = 808.0
+offset_top = 256.0
+offset_right = 920.0
+offset_bottom = 368.0
+pivot_offset = Vector2(56, 288)
 theme_override_font_sizes/normal_font_size = 32
-text = "0"
+script = ExtResource("12_1jv5p")
+
+[node name="Chopstick2" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
+offset_left = 808.0
+offset_top = 256.0
+offset_right = 920.0
+offset_bottom = 368.0
+pivot_offset = Vector2(56, 288)
+theme_override_font_sizes/normal_font_size = 32
+script = ExtResource("12_1jv5p")
+
+[node name="Chopstick3" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
+offset_left = 808.0
+offset_top = 256.0
+offset_right = 920.0
+offset_bottom = 368.0
+pivot_offset = Vector2(56, 288)
+theme_override_font_sizes/normal_font_size = 32
+script = ExtResource("12_1jv5p")
+
+[node name="Chopstick4" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
+offset_left = 808.0
+offset_top = 256.0
+offset_right = 920.0
+offset_bottom = 368.0
+pivot_offset = Vector2(56, 288)
+theme_override_font_sizes/normal_font_size = 32
+script = ExtResource("12_1jv5p")
+
+[node name="Chopstick5" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
+offset_left = 808.0
+offset_top = 256.0
+offset_right = 920.0
+offset_bottom = 368.0
+pivot_offset = Vector2(56, 288)
+theme_override_font_sizes/normal_font_size = 32
+script = ExtResource("12_1jv5p")
 
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl1" to="." method="_on_menu_button_food_taken"]

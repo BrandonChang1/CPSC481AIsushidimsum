@@ -1,4 +1,4 @@
-extends TextureRect
+extends RichTextLabel
 
 
 # Called when the node enters the scene tree for the first time.
@@ -12,4 +12,3 @@ func _process(delta: float) -> void:
 
 func rotate(degrees: int) -> void:
 	self.set_rotation_degrees(self.get_rotation_degrees() + degrees)
-	print(self.name, " rotated")
