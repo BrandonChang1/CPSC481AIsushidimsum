@@ -22,7 +22,8 @@ var bowls = []
 var chopsticks = []
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
 var rotation_degrees_remaining:int = 0
-var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # should add more logic to this. 0th element is distance from each bowl to player1, etc
+# should add more logic to this. 0th element is distance from each bowl to player1, etc. if only 2 player, other player always has 3 - current
+var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]]
 var chopsticks_count = [0, 0, 0, 0, 0, 0]
 var chopsticks_image = preload(\"res://images/chopsticks.png\")
 var all_ready = false
