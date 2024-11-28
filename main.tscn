@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://unrxlwdu170"]
+[gd_scene load_steps=13 format=3 uid="uid://unrxlwdu170"]
 
 [ext_resource type="Texture2D" uid="uid://cbw7j851kawpy" path="res://images/smallsesame.png" id="1_tg8bt"]
 [ext_resource type="Texture2D" uid="uid://d2g585c1du0r4" path="res://images/smallsesame_sq.png" id="2_hj5bs"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://csckvcl4ludgf" path="res://images/turnip_sq.png" id="6_l42ue"]
 [ext_resource type="Texture2D" uid="uid://evusbtpc7po4" path="res://images/shumai_sq.png" id="7_q68mw"]
 [ext_resource type="Texture2D" uid="uid://bvevxkj6ufquj" path="res://images/steamed_sq.png" id="8_k300g"]
+[ext_resource type="Texture2D" uid="uid://b6gdt01u6d75l" path="res://images/chopsticks.png" id="10_3l2kh"]
 
 [sub_resource type="GDScript" id="GDScript_pa3jy"]
 script/source = "#the menubuttons should show choices left to right, or in a grid, but whatever
@@ -19,6 +20,7 @@ extends Control
 var bowls = []
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
 var rotation_degrees_remaining:int = 0
+var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # should add more logic to this. 0th element is distance from each bowl to player1, etc
 
 var all_ready = false
 
@@ -63,7 +65,7 @@ func _ready() -> void:
 	for n in 6:
 		bowls[n].set_rotation(rotations_start[n])
 	
-	all_ready = true
+	all_ready = true	# not sure if this is even necessary
 	
 	
 	
@@ -173,7 +175,7 @@ grow_vertical = 2
 script = SubResource("GDScript_pa3jy")
 metadata/_edit_lock_ = true
 
-[node name="Bowl0" type="MenuButton" parent="."]
+[node name="Bowl0" type="MenuButton" parent="." groups=["bowls", "rotators"]]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
@@ -214,7 +216,7 @@ script = SubResource("GDScript_1dx7h")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
-[node name="Bowl1" type="MenuButton" parent="."]
+[node name="Bowl1" type="MenuButton" parent="." groups=["bowls", "rotators"]]
 layout_mode = 1
 anchors_preset = -1
 offset_left = 792.0
@@ -254,7 +256,7 @@ script = SubResource("GDScript_1dx7h")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
-[node name="Bowl2" type="MenuButton" parent="."]
+[node name="Bowl2" type="MenuButton" parent="." groups=["bowls", "rotators"]]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
@@ -295,7 +297,7 @@ script = SubResource("GDScript_1dx7h")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
-[node name="Bowl3" type="MenuButton" parent="."]
+[node name="Bowl3" type="MenuButton" parent="." groups=["bowls", "rotators"]]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
@@ -336,7 +338,7 @@ script = SubResource("GDScript_1dx7h")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
-[node name="Bowl4" type="MenuButton" parent="."]
+[node name="Bowl4" type="MenuButton" parent="." groups=["bowls", "rotators"]]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
@@ -377,7 +379,7 @@ script = SubResource("GDScript_1dx7h")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
-[node name="Bowl5" type="MenuButton" parent="."]
+[node name="Bowl5" type="MenuButton" parent="." groups=["bowls", "rotators"]]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
@@ -464,6 +466,61 @@ offset_top = 864.0
 offset_right = 1115.0
 offset_bottom = 942.0
 text = "Clockwise"
+
+[node name="Chopstick0" type="TextureRect" parent="." groups=["chopsticks", "rotators"]]
+visible = false
+layout_mode = 0
+offset_left = 824.0
+offset_top = 256.0
+offset_right = 904.0
+offset_bottom = 336.0
+pivot_offset = Vector2(40, 288)
+texture = ExtResource("10_3l2kh")
+
+[node name="Chopstick1" type="TextureRect" parent="." groups=["chopsticks", "rotators"]]
+visible = false
+offset_left = 824.0
+offset_top = 256.0
+offset_right = 904.0
+offset_bottom = 336.0
+pivot_offset = Vector2(40, 288)
+texture = ExtResource("10_3l2kh")
+
+[node name="Chopstick2" type="TextureRect" parent="." groups=["chopsticks", "rotators"]]
+visible = false
+offset_left = 824.0
+offset_top = 256.0
+offset_right = 904.0
+offset_bottom = 336.0
+pivot_offset = Vector2(40, 288)
+texture = ExtResource("10_3l2kh")
+
+[node name="Chopstick3" type="TextureRect" parent="." groups=["chopsticks", "rotators"]]
+visible = false
+offset_left = 824.0
+offset_top = 256.0
+offset_right = 904.0
+offset_bottom = 336.0
+pivot_offset = Vector2(40, 288)
+texture = ExtResource("10_3l2kh")
+
+[node name="Chopstick4" type="TextureRect" parent="." groups=["chopsticks", "rotators"]]
+visible = false
+offset_left = 824.0
+offset_top = 256.0
+offset_right = 904.0
+offset_bottom = 336.0
+pivot_offset = Vector2(40, 288)
+texture = ExtResource("10_3l2kh")
+
+[node name="Chopstick5" type="TextureRect" parent="." groups=["chopsticks", "rotators"]]
+visible = false
+offset_left = 824.0
+offset_top = 256.0
+offset_right = 904.0
+offset_bottom = 336.0
+pivot_offset = Vector2(40, 288)
+texture = ExtResource("10_3l2kh")
 
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl1" to="." method="_on_menu_button_food_taken"]
