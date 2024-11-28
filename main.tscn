@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://evusbtpc7po4" path="res://images/shumai_sq.png" id="7_q68mw"]
 [ext_resource type="Texture2D" uid="uid://bvevxkj6ufquj" path="res://images/steamed_sq.png" id="8_k300g"]
 [ext_resource type="Texture2D" uid="uid://b6gdt01u6d75l" path="res://images/chopsticks.png" id="10_3l2kh"]
+[ext_resource type="Script" path="res://bowl.gd" id="10_m761y"]
+[ext_resource type="Script" path="res://chopstick.gd" id="12_1jv5p"]
 
 [sub_resource type="GDScript" id="GDScript_pa3jy"]
 script/source = "#the menubuttons should show choices left to right, or in a grid, but whatever
@@ -21,6 +23,7 @@ var bowls = []
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
 var rotation_degrees_remaining:int = 0
 var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # should add more logic to this. 0th element is distance from each bowl to player1, etc
+var chopsticks = [0, 0, 0, 0, 0, 0]
 
 var all_ready = false
 
@@ -107,86 +110,14 @@ func _on_button_pressed(arg1:String) -> void:
 		print(\"cw button pressed\")
 		rotate_board(1)
 
-func rotate_board(arg1:int) -> void:
-		rotation_degrees_remaining += 60
+func rotate_board(distance:int) -> void:
+		rotation_degrees_remaining += 60 * distance
+		chopsticks[distances[curr_turn].find(0)] += 1
+			
 
 func _on_check_box_toggled(toggled_on: bool) -> void:
 	autoturn = toggled_on
 	print(autoturn)
-"
-
-[sub_resource type="GDScript" id="GDScript_1dx7h"]
-script/source = "extends MenuButton
-
-const bowl_index:int = 0
-var current_item = 0
-
-# should these be exports in the main scene instead?
-var smallsesame_image = preload(\"res://images/smallsesame.png\")
-var largesesame_image = preload(\"res://images/largesesame.png\")
-var chive_image = preload(\"res://images/chive.png\")
-var egg_image = preload(\"res://images/egg.png\")
-var shrimp_image = preload(\"res://images/shrimp.png\")
-var turnip_image = preload(\"res://images/turnip.png\")
-var shumai_image = preload(\"res://images/shumai.png\")
-var steamed_image = preload(\"res://images/steamed.png\")
-
-
-signal food_taken(bowl:int,taken:int,revealed:int)
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	self.get_popup().id_pressed.connect(_on_item_menu_pressed)
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
-func _on_item_menu_pressed(id: int):
-	print(\"Bowl \", bowl_index, \" was \", current_item , \" now \", id)
-	food_taken.emit(bowl_index,current_item,id)
-	current_item = id
-	match id:
-		0:
-			set_button_icon(smallsesame_image)
-		1:
-			set_button_icon(largesesame_image)
-		2:
-			set_button_icon(chive_image)
-		3:
-			set_button_icon(egg_image)
-		4:
-			set_button_icon(shrimp_image)
-		5:
-			set_button_icon(turnip_image)
-		6:
-			set_button_icon(shumai_image)
-		7:
-			set_button_icon(steamed_image)
-
-func rotate(degrees: int) -> void:
-	self.set_rotation_degrees(self.get_rotation_degrees() + degrees)
-	print(self.name, \" rotated\")
-"
-
-[sub_resource type="GDScript" id="GDScript_cfk01"]
-resource_name = "chopstick"
-script/source = "extends TextureRect
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
-func rotate(degrees: int) -> void:
-	self.set_rotation_degrees(self.get_rotation_degrees() + degrees)
-	print(self.name, \" rotated\")
 "
 
 [node name="Control" type="Control"]
@@ -236,7 +167,7 @@ popup/item_6/id = 6
 popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
-script = SubResource("GDScript_1dx7h")
+script = ExtResource("10_m761y")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -277,7 +208,7 @@ popup/item_6/id = 6
 popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
-script = SubResource("GDScript_1dx7h")
+script = ExtResource("10_m761y")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -318,7 +249,7 @@ popup/item_6/id = 6
 popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
-script = SubResource("GDScript_1dx7h")
+script = ExtResource("10_m761y")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -359,7 +290,7 @@ popup/item_6/id = 6
 popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
-script = SubResource("GDScript_1dx7h")
+script = ExtResource("10_m761y")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -400,7 +331,7 @@ popup/item_6/id = 6
 popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
-script = SubResource("GDScript_1dx7h")
+script = ExtResource("10_m761y")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -441,7 +372,7 @@ popup/item_6/id = 6
 popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
-script = SubResource("GDScript_1dx7h")
+script = ExtResource("10_m761y")
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -496,11 +427,17 @@ text = "Clockwise"
 layout_mode = 0
 offset_left = 824.0
 offset_top = 256.0
-offset_right = 904.0
-offset_bottom = 336.0
+offset_right = 912.0
+offset_bottom = 344.0
 pivot_offset = Vector2(40, 288)
 texture = ExtResource("10_3l2kh")
-script = SubResource("GDScript_cfk01")
+script = ExtResource("12_1jv5p")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+text = "0"
 
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl1" to="." method="_on_menu_button_food_taken"]
