@@ -1,6 +1,6 @@
 extends MenuButton
 
-const bowl_index:int = 0
+@export var bowl_index:int = 0
 var current_item = 0
 
 # should these be exports in the main scene instead?

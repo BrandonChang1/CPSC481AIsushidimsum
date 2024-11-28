@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://unrxlwdu170"]
+[gd_scene load_steps=16 format=3 uid="uid://unrxlwdu170"]
 
 [ext_resource type="Texture2D" uid="uid://cbw7j851kawpy" path="res://images/smallsesame.png" id="1_tg8bt"]
 [ext_resource type="Texture2D" uid="uid://d2g585c1du0r4" path="res://images/smallsesame_sq.png" id="2_hj5bs"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://evusbtpc7po4" path="res://images/shumai_sq.png" id="7_q68mw"]
 [ext_resource type="Texture2D" uid="uid://bvevxkj6ufquj" path="res://images/steamed_sq.png" id="8_k300g"]
 [ext_resource type="Script" path="res://bowl.gd" id="10_m761y"]
+[ext_resource type="StyleBox" uid="uid://cg0uhgpnaybyk" path="res://wood_brown_style_box_flat.tres" id="11_xn3s5"]
 [ext_resource type="Script" path="res://chopstick.gd" id="12_1jv5p"]
 [ext_resource type="Texture2D" uid="uid://lq6x5plb66g6" path="res://images/steamedbun.png" id="12_kd18h"]
 [ext_resource type="Texture2D" uid="uid://bjo54s6jc3v50" path="res://white-pattern-lines-stripes-tablecloth-light-701812-wallhere.com.jpg" id="13_mtfoi"]
@@ -28,7 +29,8 @@ enum {
 	shrimp,
 	turnip,
 	shumai,
-	steamed
+	steamed,
+	chopstick
 }
 
 enum {
@@ -41,8 +43,10 @@ enum {
 	nobody
 }
 
-var bowls = []
-var chopsticks = []
+@onready var bowls = [$Bowl0, $Bowl1, $Bowl2, $Bowl3, $Bowl4, $Bowl5]
+@onready var chopsticks = [$Chopstick0, $Chopstick1, $Chopstick2, $Chopstick3, $Chopstick4, $Chopstick5]
+@onready var end_turn = get_node(\"EndTurn\")
+
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
 var rotation_degrees_remaining:int = 0
 # should add more logic to this. 0th element is distance from each bowl to player1, etc. if only 2 player, other player always has 3 - current
@@ -52,9 +56,10 @@ var steamed_bun_owner: int = nobody
 
 const num_players = 2
 var current_player = 0
-var player_foods: Array[Array] = []
+var inventories: Array[Array] = []
 
 var autoturn:bool = false
+var game_started:bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -62,10 +67,7 @@ func _ready() -> void:
 	# chop_test.add_image(chopsticks_image)
 	
 	for n in num_players:
-		player_foods.append([0,0,0,0,0,0,0,0]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
-	
-	bowls = [$Bowl0, $Bowl1, $Bowl2, $Bowl3, $Bowl4, $Bowl5]
-	chopsticks = [$Chopstick0, $Chopstick1, $Chopstick2, $Chopstick3, $Chopstick4, $Chopstick5]
+		inventories.append([0,0,0,0,0,0,0,0,0]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
 	
 	for n in 6:
 		bowls[n].set_rotation(rotations_start[n])
@@ -83,15 +85,19 @@ func _process(delta: float) -> void:
 		rotation_degrees_remaining -= 3 * modifier
 
 func _on_menu_button_food_taken(bowl: int, taken: int, revealed: int) -> void:
-	player_foods[current_player][taken] += 1
+	if game_started:
+		inventories[current_player][taken] += 1
+		take_chopsticks(bowl)
+		
+		print_status()
 	# make new function that does the following: increment the appropriate item, updates the counter. counter needs to be in lockstep with the array variable. and also calculate poitn value.
-	print_status()
+
 
 func counter_update() -> void:
 	pass
 
 func print_status() -> void:
-	print(player_foods)
+	print(inventories)
 
 func inc_turn() -> void:
 	current_player += 1
@@ -102,7 +108,12 @@ func inc_turn() -> void:
 
 func _on_button_pressed(arg1:String) -> void:
 	if arg1 == \"turn\":
-		inc_turn()
+		if !game_started:
+			end_turn.set_text(\"End Turn\")
+			game_started = true
+			print(\"Game Start\")
+		else:
+			inc_turn()
 	if arg1 == \"ccw\":
 		print(\"ccw button pressed\")
 		rotate_board(-1)
@@ -116,7 +127,8 @@ func rotate_board(distance:int) -> void:
 		rotation_degrees_remaining += 60 * distance
 		
 		while distance != 0:
-			add_chopstick(distances[current_player].find(0))
+			if game_started:
+				add_chopstick(distances[current_player].find(0))
 			
 			for n in num_players:	# somehow have to do num_players and not distances. too many iterations when use distances.
 				if distance < 0:
@@ -135,6 +147,14 @@ func rotate_board(distance:int) -> void:
 
 func add_chopstick(index:int) -> void:
 	chopsticks_count[index] += 1
+	update_chopstick(index)
+
+func take_chopsticks(bowl:int) -> void:
+	inventories[current_player][chopstick] += chopsticks_count[bowl]
+	chopsticks_count[bowl] = 0
+	update_chopstick(bowl)
+	
+func update_chopstick(index:int) -> void:
 	chopsticks[index].update(chopsticks_count[index])	# should make chopsticks and other things like these singletons. oh well.
 
 func _on_check_box_toggled(toggled_on: bool) -> void:
@@ -231,6 +251,7 @@ popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
 script = ExtResource("10_m761y")
+bowl_index = 1
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -272,6 +293,7 @@ popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
 script = ExtResource("10_m761y")
+bowl_index = 2
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -313,6 +335,7 @@ popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
 script = ExtResource("10_m761y")
+bowl_index = 3
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -354,6 +377,7 @@ popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
 script = ExtResource("10_m761y")
+bowl_index = 4
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -395,6 +419,7 @@ popup/item_7/text = "Steamed Bun"
 popup/item_7/icon = ExtResource("8_k300g")
 popup/item_7/id = 7
 script = ExtResource("10_m761y")
+bowl_index = 5
 metadata/bowl_index = 0
 metadata/current_item = 0
 
@@ -420,13 +445,15 @@ offset_right = 404.0
 offset_bottom = 387.0
 
 [node name="EndTurn" type="Button" parent="."]
+top_level = true
 layout_mode = 0
 offset_left = 664.0
 offset_top = 920.0
 offset_right = 1064.0
 offset_bottom = 1068.0
 theme_override_font_sizes/font_size = 48
-text = "End Turn"
+theme_override_styles/normal = ExtResource("11_xn3s5")
+text = "Start Game"
 
 [node name="CheckBox" type="CheckBox" parent="."]
 layout_mode = 0
@@ -443,6 +470,7 @@ offset_left = 608.0
 offset_top = 776.0
 offset_right = 771.0
 offset_bottom = 854.0
+theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Clockwise"
 
 [node name="Chopstick0" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
@@ -457,6 +485,7 @@ theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick1" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
+layout_mode = 0
 offset_left = 824.0
 offset_top = 256.0
 offset_right = 936.0
@@ -467,6 +496,7 @@ theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick2" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
+layout_mode = 0
 offset_left = 824.0
 offset_top = 256.0
 offset_right = 936.0
@@ -477,6 +507,7 @@ theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick3" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
+layout_mode = 0
 offset_left = 824.0
 offset_top = 256.0
 offset_right = 936.0
@@ -487,6 +518,7 @@ theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick4" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
+layout_mode = 0
 offset_left = 824.0
 offset_top = 256.0
 offset_right = 936.0
@@ -497,6 +529,7 @@ theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick5" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
+layout_mode = 0
 offset_left = 824.0
 offset_top = 256.0
 offset_right = 936.0
@@ -515,18 +548,20 @@ offset_bottom = 606.0
 texture = ExtResource("12_kd18h")
 
 [node name="CCwise" type="Button" parent="."]
+layout_mode = 0
 offset_left = 952.0
 offset_top = 776.0
 offset_right = 1115.0
 offset_bottom = 854.0
+theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Counterclockwise"
 
 [node name="Background" type="TextureRect" parent="."]
 z_index = -1
 layout_mode = 0
-offset_left = -64.0
+offset_left = -72.0
 offset_top = -24.0
-offset_right = 1856.0
+offset_right = 1848.0
 offset_bottom = 1104.0
 mouse_filter = 2
 texture = ExtResource("13_mtfoi")
