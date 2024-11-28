@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://unrxlwdu170"]
+[gd_scene load_steps=14 format=3 uid="uid://unrxlwdu170"]
 
 [ext_resource type="Texture2D" uid="uid://cbw7j851kawpy" path="res://images/smallsesame.png" id="1_tg8bt"]
 [ext_resource type="Texture2D" uid="uid://d2g585c1du0r4" path="res://images/smallsesame_sq.png" id="2_hj5bs"]
@@ -11,20 +11,13 @@
 [ext_resource type="Texture2D" uid="uid://bvevxkj6ufquj" path="res://images/steamed_sq.png" id="8_k300g"]
 [ext_resource type="Script" path="res://bowl.gd" id="10_m761y"]
 [ext_resource type="Script" path="res://chopstick.gd" id="12_1jv5p"]
+[ext_resource type="Texture2D" uid="uid://lq6x5plb66g6" path="res://images/steamedbun.png" id="12_kd18h"]
 
 [sub_resource type="GDScript" id="GDScript_pa3jy"]
 script/source = "#the menubuttons should show choices left to right, or in a grid, but whatever
 #make a large dining table for the background
 # for opponents, do simple label counter, for yourself do stacked icons
 extends Control
-
-var bowls = []
-var chopsticks = []
-var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
-var rotation_degrees_remaining:int = 0
-# should add more logic to this. 0th element is distance from each bowl to player1, etc. if only 2 player, other player always has 3 - current
-var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # seeded with the starting distances. need as many elements as there are players.
-var chopsticks_count = [0, 0, 0, 0, 0, 0]
 
 enum {
 	small_sesame,
@@ -40,11 +33,21 @@ enum {
 enum {
 	player1,
 	player2,
-	#player3,
-	#player4,
-	#player5,
-	#player6
+	player3,
+	player4,
+	player5,
+	player6,
+	nobody
 }
+
+var bowls = []
+var chopsticks = []
+var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
+var rotation_degrees_remaining:int = 0
+# should add more logic to this. 0th element is distance from each bowl to player1, etc. if only 2 player, other player always has 3 - current
+var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # seeded with the starting distances. need as many elements as there are players.
+var chopsticks_count = [0, 0, 0, 0, 0, 0]
+var steamed_bun_owner: int = nobody
 
 const num_players = 2
 var current_player = 0
@@ -70,10 +73,13 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if rotation_degrees_remaining != 0:
-		get_tree().call_group(\"rotators\", \"rotate\", 2)
+		var modifier:int = 1
+		if rotation_degrees_remaining < 0:
+			modifier = -1
+		get_tree().call_group(\"rotators\", \"rotate\", 3 * modifier)
 		#for n in 6:
 			#bowls[n].set_rotation_degrees(bowls[n].get_rotation_degrees() + 2)
-		rotation_degrees_remaining -= 2
+		rotation_degrees_remaining -= 3 * modifier
 
 func _on_menu_button_food_taken(bowl: int, taken: int, revealed: int) -> void:
 	player_foods[current_player][taken] += 1
@@ -119,7 +125,10 @@ func rotate_board(distance:int) -> void:
 					temp = distances[n].pop_front()
 					distances[n].push_back(temp)
 
-			distance -= 1
+			if distance > 0:
+				distance -= 1
+			if distance < 0:
+				distance += 1
 		
 		print(\"Distances: \", distances)
 
@@ -411,84 +420,99 @@ offset_bottom = 387.0
 
 [node name="EndTurn" type="Button" parent="."]
 layout_mode = 0
-offset_left = 1227.0
-offset_top = 643.0
-offset_right = 1627.0
-offset_bottom = 791.0
+offset_left = 664.0
+offset_top = 920.0
+offset_right = 1064.0
+offset_bottom = 1068.0
 theme_override_font_sizes/font_size = 48
 text = "End Turn"
 
 [node name="CheckBox" type="CheckBox" parent="."]
 layout_mode = 0
-offset_left = 1227.0
-offset_top = 512.0
-offset_right = 1622.0
-offset_bottom = 598.0
+offset_left = 688.0
+offset_top = 848.0
+offset_right = 1083.0
+offset_bottom = 934.0
 theme_override_font_sizes/font_size = 24
 text = "Automatically Switch Turns"
 
-[node name="Button" type="Button" parent="."]
+[node name="Clockwise" type="Button" parent="."]
 layout_mode = 0
-offset_left = 952.0
-offset_top = 864.0
-offset_right = 1115.0
-offset_bottom = 942.0
+offset_left = 608.0
+offset_top = 776.0
+offset_right = 771.0
+offset_bottom = 854.0
 text = "Clockwise"
 
 [node name="Chopstick0" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 808.0
+offset_left = 824.0
 offset_top = 256.0
-offset_right = 920.0
+offset_right = 936.0
 offset_bottom = 368.0
-pivot_offset = Vector2(56, 288)
+pivot_offset = Vector2(40, 288)
 theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick1" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
-offset_left = 808.0
+offset_left = 824.0
 offset_top = 256.0
-offset_right = 920.0
+offset_right = 936.0
 offset_bottom = 368.0
-pivot_offset = Vector2(56, 288)
+pivot_offset = Vector2(40, 288)
 theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick2" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
-offset_left = 808.0
+offset_left = 824.0
 offset_top = 256.0
-offset_right = 920.0
+offset_right = 936.0
 offset_bottom = 368.0
-pivot_offset = Vector2(56, 288)
+pivot_offset = Vector2(40, 288)
 theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick3" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
-offset_left = 808.0
+offset_left = 824.0
 offset_top = 256.0
-offset_right = 920.0
+offset_right = 936.0
 offset_bottom = 368.0
-pivot_offset = Vector2(56, 288)
+pivot_offset = Vector2(40, 288)
 theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick4" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
-offset_left = 808.0
+offset_left = 824.0
 offset_top = 256.0
-offset_right = 920.0
+offset_right = 936.0
 offset_bottom = 368.0
-pivot_offset = Vector2(56, 288)
+pivot_offset = Vector2(40, 288)
 theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick5" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
-offset_left = 808.0
+offset_left = 824.0
 offset_top = 256.0
-offset_right = 920.0
+offset_right = 936.0
 offset_bottom = 368.0
-pivot_offset = Vector2(56, 288)
+pivot_offset = Vector2(40, 288)
 theme_override_font_sizes/normal_font_size = 32
 script = ExtResource("12_1jv5p")
+
+[node name="SteamedCenter" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 796.0
+offset_top = 480.0
+offset_right = 936.0
+offset_bottom = 606.0
+texture = ExtResource("12_kd18h")
+
+[node name="CCwise" type="Button" parent="."]
+offset_left = 952.0
+offset_top = 776.0
+offset_right = 1115.0
+offset_bottom = 854.0
+text = "Counterclockwise"
 
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl1" to="." method="_on_menu_button_food_taken"]
@@ -498,4 +522,5 @@ script = ExtResource("12_1jv5p")
 [connection signal="food_taken" from="Bowl5" to="." method="_on_menu_button_food_taken"]
 [connection signal="pressed" from="EndTurn" to="." method="_on_button_pressed" binds= ["turn"]]
 [connection signal="toggled" from="CheckBox" to="." method="_on_check_box_toggled"]
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed" binds= ["cw"]]
+[connection signal="pressed" from="Clockwise" to="." method="_on_button_pressed" binds= ["cw"]]
+[connection signal="pressed" from="CCwise" to="." method="_on_button_pressed" binds= ["ccw"]]

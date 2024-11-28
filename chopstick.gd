@@ -18,4 +18,4 @@ func update(count:int) -> void:
 	if count > 0:
 		self.add_image(chopsticks_image)
 	if count > 1:
-		self.add_text(" ", str(count))
+		self.add_text(" "+str(count))
