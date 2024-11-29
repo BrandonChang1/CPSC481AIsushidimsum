@@ -22,6 +22,11 @@ enum Players {
 	NOBODY
 }
 
+var num_players = 2
+
+var inventories: Array[Array] = []
+const STARTING_CHOPSTICKS = 4
+
 var smallsesame_image = preload("res://images/smallsesame.png")
 var largesesame_image = preload("res://images/largesesame.png")
 var chive_image = preload("res://images/chive.png")

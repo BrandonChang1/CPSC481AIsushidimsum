@@ -32,7 +32,6 @@ extends Control
 @onready var steamed_center = $SteamedCenter
 @onready var score_info = $ScoreInfo
 
-const STARTING_CHOPSTICKS = 4
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5]
 var rotation_degrees_remaining:int = 0
 # should add more logic to this. 0th element is distance from each bowl to player1, etc. if only 2 player, other player always has 3 - current
@@ -43,9 +42,7 @@ var steamed_bun_owner: Global.Players = Global.Players.NOBODY
 #var on_board:Array[int] = [Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME] 
 var on_board:Array[Global.Items] = []
 
-const num_players = 2
 var current_player: int = Global.Players.PLAYER1
-var inventories: Array[Array] = []
 
 var autoturn:bool = false
 var game_started:bool = false
@@ -56,8 +53,8 @@ func _ready() -> void:
 	
 	on_board = [bowls[0].current_item, bowls[1].current_item, bowls[2].current_item, bowls[3].current_item, bowls[4].current_item, bowls[5].current_item]
 	
-	for n in num_players:
-		inventories.append([0,0,0,0,0,0,0,0,STARTING_CHOPSTICKS]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
+	for n in Global.num_players:
+		Global.inventories.append([0,0,0,0,0,0,0,0,Global.STARTING_CHOPSTICKS]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
 		update_inventory_text(n)
 	
 	for n in 6:
@@ -82,8 +79,9 @@ func _process(delta: float) -> void:
 
 func _on_menu_button_food_taken(bowl: int, taken: Global.Items, revealed: Global.Items) -> void: # dont really need taken. just use on_board[bowl]
 	if game_started:
-		inventories[current_player][taken] += 1
+		Global.inventories[current_player][taken] += 1
 		take_chopsticks(bowl)
+		update_score_text()
 		moving_item.move_item(taken, position_markers[bowls[bowl].rotational_position].position, inventory_texts[current_player].position)
 		print_status()
 	on_board[bowl] = revealed
@@ -97,7 +95,7 @@ func update_inventory_text(player:int = current_player) -> void:
 	inventory_texts[player].clear()
 	for item in Global.square_items.size(): # this should prob be number of elements in [current_player][i]. number of total items.
 		counter = 0
-		while counter < inventories[player][item]:
+		while counter < Global.inventories[player][item]:
 			inventory_texts[player].add_image(Global.square_items[item])
 			counter += 1
 
@@ -107,10 +105,10 @@ func update_score_text() -> void:
 	var text:String
 	
 	# this is really ugly
-	for player in inventories.size():
+	for player in Global.inventories.size():
 		text += Global.player_string(player)
 		text += \" has \"
-		text += str(calc_score(inventories[player]))
+		text += str(Scoring.calc_score(Global.inventories[player]))
 		text += \" points\\n\"
 	
 	score_info.set_text(text)
@@ -118,14 +116,14 @@ func update_score_text() -> void:
 
 
 func print_status() -> void:
-	print(inventories)
+	print(Global.inventories)
 
 
 
 func inc_turn() -> void:
 	current_player += 1
 	update_score_text()
-	if current_player == num_players: # should prob use modulus here
+	if current_player == Global.num_players: # should prob use modulus here
 		current_player = 0
 	print(\"now turn for player \", (current_player + 1)) # replace with player to string
 
@@ -160,10 +158,10 @@ func rotate_board(distance:int) -> void:
 		rotation_degrees_remaining += 60 * distance
 		
 		while distance != 0:
-			if game_started && ( inventories[current_player][Global.Items.CHOPSTICK] > 0 ):
+			if game_started && ( Global.inventories[current_player][Global.Items.CHOPSTICK] > 0 ):
 				add_chopstick(distances[current_player].find(0))
 			
-			for n in num_players:	# somehow have to do num_players and not distances. too many iterations when use distances.
+			for n in Global.num_players:	# somehow have to do num_players and not distances. too many iterations when use distances.
 				if distance < 0:
 					temp = distances[n].pop_back()
 					distances[n].push_front(temp)
@@ -182,8 +180,8 @@ func rotate_board(distance:int) -> void:
 
 
 func add_chopstick(index:int) -> void:
-	if inventories[current_player][Global.Items.CHOPSTICK] > 0:
-		inventories[current_player][Global.Items.CHOPSTICK] -= 1
+	if Global.inventories[current_player][Global.Items.CHOPSTICK] > 0:
+		Global.inventories[current_player][Global.Items.CHOPSTICK] -= 1
 		update_inventory_text()
 	chopsticks_count[index] += 1
 	update_chopstick(index)
@@ -191,7 +189,7 @@ func add_chopstick(index:int) -> void:
 
 
 func take_chopsticks(bowl:int) -> void:
-	inventories[current_player][Global.Items.CHOPSTICK] += chopsticks_count[bowl]
+	Global.inventories[current_player][Global.Items.CHOPSTICK] += chopsticks_count[bowl]
 	chopsticks_count[bowl] = 0
 	update_chopstick(bowl)
 
@@ -205,66 +203,13 @@ func update_chopstick(index:int) -> void:
 func _on_check_box_toggled(toggled_on: bool) -> void:
 	autoturn = toggled_on
 	print(autoturn)
-
-
-
-func calc_score(inventory: Array) -> int:
 	
-	var score:int = 0
-	
-	# small sesame
-	score += inventory[Global.Items.SMALL_SESAME]
-	# large sesame
-	score += inventory[Global.Items.LARGE_SESAME] * 2
-	# chive
-	score += int(inventory[Global.Items.CHIVE]/2) * 4
-	# egg tart
-	match inventory[Global.Items.EGG]:
-		0:
-			pass
-		1:
-			score += 1
-		2:
-			score += 2
-		3:
-			score += 5
-		4:
-			score += 9
-		_:
-			score += 15
-	score += int( inventory[Global.Items.SHRIMP] / 3 ) * 7	# can also calculate using modulo. subtract modulus then divide.
-	# turnip
-	if inventory[Global.Items.TURNIP] % 2:
-		score += inventory[Global.Items.TURNIP] * 2
-	int( inventory[Global.Items.SHUMAI] / 4 ) * 12
-	# steamed bun scoring. current implementation is simple but sometimes wrong.
-	var steamed_max = 0
-	var steamed_min = 0
-	for player in num_players:
-		if inventories[player][Global.Items.STEAMED] > steamed_max:
-			steamed_max = inventories[player][Global.Items.STEAMED]
-		if inventories[player][Global.Items.STEAMED] < steamed_min:
-			steamed_min = inventories[player][Global.Items.STEAMED]
-	if inventory[Global.Items.STEAMED] == steamed_max:
-		score += 3
-	if inventory[Global.Items.STEAMED] == steamed_min:
-		score -= 3
-	# better but unimplemented. a priority queue would be much better
-	# var steamed_counter: Array[Array] = []
-	# for i in 13:
-	# steamed_counter.append([])
-	# special plates TODO
-	# chopstick
-	score += int( inventory[Global.Items.CHOPSTICK] / 2 )
-	
-	return score
-
 
 
 ## not used
 func set_starting_chopsticks() -> void:
-	for player in inventories.size():
-		inventories[player][Global.Items.CHOPSTICK] = 4
+	for player in Global.inventories.size():
+		Global.inventories[player][Global.Items.CHOPSTICK] = 4
 		update_inventory_text(player)
 "
 
@@ -712,6 +657,7 @@ offset_left = 856.0
 offset_top = 360.0
 offset_right = 896.0
 offset_bottom = 400.0
+mouse_filter = 2
 
 [node name="Position1" type="Control" parent="."]
 anchors_preset = 0
@@ -719,6 +665,7 @@ offset_left = 1032.0
 offset_top = 440.0
 offset_right = 1072.0
 offset_bottom = 480.0
+mouse_filter = 2
 
 [node name="Position2" type="Control" parent="."]
 layout_mode = 3
@@ -727,6 +674,7 @@ offset_left = 1032.0
 offset_top = 632.0
 offset_right = 1072.0
 offset_bottom = 672.0
+mouse_filter = 2
 
 [node name="Position3" type="Control" parent="."]
 layout_mode = 3
@@ -735,6 +683,7 @@ offset_left = 848.0
 offset_top = 704.0
 offset_right = 888.0
 offset_bottom = 744.0
+mouse_filter = 2
 
 [node name="Position4" type="Control" parent="."]
 layout_mode = 3
@@ -743,6 +692,7 @@ offset_left = 624.0
 offset_top = 584.0
 offset_right = 664.0
 offset_bottom = 624.0
+mouse_filter = 2
 
 [node name="Position5" type="Control" parent="."]
 layout_mode = 3
@@ -751,6 +701,7 @@ offset_left = 640.0
 offset_top = 392.0
 offset_right = 680.0
 offset_bottom = 432.0
+mouse_filter = 2
 
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl1" to="." method="_on_menu_button_food_taken"]
