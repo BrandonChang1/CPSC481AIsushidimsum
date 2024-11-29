@@ -69,8 +69,7 @@ var game_started:bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	# var chop_test = get_node(\"Chopstick0\")
-	# chop_test.add_image(chopsticks_image)
+	moving_item.move_complete.connect(self.update_inventory_text)
 	
 	for n in num_players:
 		inventories.append([0,0,0,0,0,0,0,0,0]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
@@ -93,17 +92,38 @@ func _process(delta: float) -> void:
 			#bowls[n].set_rotation_degrees(bowls[n].get_rotation_degrees() + 2)
 		rotation_degrees_remaining -= 3 * modifier
 
-func _on_menu_button_food_taken(bowl: int, taken: int, revealed: int) -> void:
+func _on_menu_button_food_taken(bowl: int, taken: Global.Items, revealed: Global.Items) -> void:
 	if game_started:
 		inventories[current_player][taken] += 1
 		take_chopsticks(bowl)
 		moving_item.move_item(taken, steamed_center.position, inventory_texts[current_player].position)
+		# update_inventory_text()
 		print_status()
 	# make new function that does the following: increment the appropriate item, updates the counter. counter needs to be in lockstep with the array variable. and also calculate poitn value.
 
 
-func counter_update() -> void:
-	pass
+func update_inventory_text() -> void:
+	# await get_tree().create_timer(0.5).timeout # https://forum.godotengine.org/t/is-there-a-wait-function-to-godot/38759
+	inventory_texts[current_player].clear()
+	for n in inventories[current_player][Global.Items.SMALL_SESAME]:
+		inventory_texts[current_player].add_image(Global.square_items[0])
+	for n in inventories[current_player][Global.Items.LARGE_SESAME]:
+		inventory_texts[current_player].add_image(Global.square_items[1])
+	for n in inventories[current_player][Global.Items.CHIVE]:
+		inventory_texts[current_player].add_image(Global.square_items[2])
+	for n in inventories[current_player][3]:
+		inventory_texts[current_player].add_image(Global.square_items[3])
+	for n in inventories[current_player][4]:
+		inventory_texts[current_player].add_image(Global.square_items[4])
+	for n in inventories[current_player][5]:
+		inventory_texts[current_player].add_image(Global.square_items[5])
+	for n in inventories[current_player][6]:
+		inventory_texts[current_player].add_image(Global.square_items[6])
+	for n in inventories[current_player][7]:
+		inventory_texts[current_player].add_image(Global.square_items[7])
+	for n in inventories[current_player][8]:
+		inventory_texts[current_player].add_image(Global.square_items[8])
+
 
 func print_status() -> void:
 	print(inventories)
@@ -559,8 +579,8 @@ texture = ExtResource("13_mtfoi")
 layout_mode = 0
 offset_left = 1336.0
 offset_top = 912.0
-offset_right = 1584.0
-offset_bottom = 1024.0
+offset_right = 1680.0
+offset_bottom = 1080.0
 
 [node name="MovingItem" type="TextureRect" parent="."]
 visible = false

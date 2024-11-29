@@ -14,6 +14,8 @@ var chopstick = preload("res://chopstick.gd")
 var moving:bool = false
 var target:Vector2
 
+signal move_complete()
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
@@ -27,6 +29,7 @@ func _process(delta: float) -> void:
 		if self.position == target:
 			self.visible = false
 			moving = false
+			move_complete.emit()
 
 # https://docs.godotengine.org/en/stable/tutorials/2d/2d_movement.html click and move
 
