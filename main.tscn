@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://unrxlwdu170"]
+[gd_scene load_steps=17 format=3 uid="uid://unrxlwdu170"]
 
 [ext_resource type="Texture2D" uid="uid://cbw7j851kawpy" path="res://images/smallsesame.png" id="1_tg8bt"]
 [ext_resource type="Texture2D" uid="uid://d2g585c1du0r4" path="res://images/smallsesame_sq.png" id="2_hj5bs"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://chopstick.gd" id="12_1jv5p"]
 [ext_resource type="Texture2D" uid="uid://lq6x5plb66g6" path="res://images/steamedbun.png" id="12_kd18h"]
 [ext_resource type="Texture2D" uid="uid://bjo54s6jc3v50" path="res://white-pattern-lines-stripes-tablecloth-light-701812-wallhere.com.jpg" id="13_mtfoi"]
+[ext_resource type="Script" path="res://moving_food.gd" id="15_kwwil"]
 
 [sub_resource type="GDScript" id="GDScript_pa3jy"]
 script/source = "#the menubuttons should show choices left to right, or in a grid, but whatever
@@ -46,7 +47,9 @@ enum {
 @onready var bowls = [$Bowl0, $Bowl1, $Bowl2, $Bowl3, $Bowl4, $Bowl5]
 @onready var chopsticks = [$Chopstick0, $Chopstick1, $Chopstick2, $Chopstick3, $Chopstick4, $Chopstick5]
 @onready var end_turn = get_node(\"EndTurn\")
-@onready var inventory_p1 = get_node(\"InventoryP1\")
+@onready var inventory_texts = [$InventoryP1]
+@onready var moving_item = get_node(\"MovingItem\")
+@onready var steamed_center = $SteamedCenter
 
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
 var rotation_degrees_remaining:int = 0
@@ -54,6 +57,8 @@ var rotation_degrees_remaining:int = 0
 var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # seeded with the starting distances. need as many elements as there are players.
 var chopsticks_count = [0, 0, 0, 0, 0, 0]
 var steamed_bun_owner: int = nobody
+var on_board:Array[int] = [Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME] 
+
 
 const num_players = 2
 var current_player = 0
@@ -92,7 +97,7 @@ func _on_menu_button_food_taken(bowl: int, taken: int, revealed: int) -> void:
 	if game_started:
 		inventories[current_player][taken] += 1
 		take_chopsticks(bowl)
-		
+		moving_item.move_item(taken, steamed_center.position, inventory_texts[current_player].position)
 		print_status()
 	# make new function that does the following: increment the appropriate item, updates the counter. counter needs to be in lockstep with the array variable. and also calculate poitn value.
 
@@ -556,6 +561,13 @@ offset_left = 1336.0
 offset_top = 912.0
 offset_right = 1584.0
 offset_bottom = 1024.0
+
+[node name="MovingItem" type="TextureRect" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("15_kwwil")
 
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl1" to="." method="_on_menu_button_food_taken"]

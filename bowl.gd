@@ -3,7 +3,7 @@ extends MenuButton
 @export var bowl_index:int = 0
 var current_item = 0
 
-# should these be exports in the main scene instead?
+# should these be in the global instead?
 var smallsesame_image = preload("res://images/smallsesame.png")
 var largesesame_image = preload("res://images/largesesame.png")
 var chive_image = preload("res://images/chive.png")
