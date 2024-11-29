@@ -27,11 +27,15 @@ func _process(delta: float) -> void:
 	if moving == true:
 		self.position = self.position.move_toward(target, delta * 4000)
 		if self.position == target:
-			self.visible = false
-			moving = false
-			move_complete.emit()
+			done_moving()
+
 
 # https://docs.godotengine.org/en/stable/tutorials/2d/2d_movement.html click and move
+
+func done_moving() -> void:
+	self.visible = false
+	moving = false
+	move_complete.emit()
 
 # this doesn't account for rotation, so it will always start from a starting point if the rotation is not accounted for.
 func move_item(item:int, start:Vector2, end:Vector2) -> void:

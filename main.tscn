@@ -103,11 +103,14 @@ func _on_menu_button_food_taken(bowl: int, taken: Global.Items, revealed: Global
 
 
 func update_inventory_text() -> void:
+	var counter:int
 	# await get_tree().create_timer(0.5).timeout # https://forum.godotengine.org/t/is-there-a-wait-function-to-godot/38759
 	inventory_texts[current_player].clear()
-	for i in Global.square_items: # this should prob be number of elements in [current_player][i]. number of total items.
-		for n in inventories[current_player][i]:
-			inventory_texts[current_player].add_image(Global.square_items[n])
+	for item in Global.square_items.size(): # this should prob be number of elements in [current_player][i]. number of total items.
+		counter = 0
+		while counter < inventories[current_player][item]:
+			inventory_texts[current_player].add_image(Global.square_items[item])
+			counter += 1
 
 
 func print_status() -> void:
