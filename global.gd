@@ -74,3 +74,27 @@ func player_string(player:Players) -> String:
 			return "Player Six"
 		_:
 			return "BIGPROBLEM"
+
+
+func item_string(item:Items) -> String:
+	match item:
+		Items.SMALL_SESAME:
+			return "Small Sesame Bun"
+		Items.LARGE_SESAME:
+			return "Large Sesame Bun"
+		Items.CHIVE:
+			return "Chive Dumpling"
+		Items.EGG:
+			return "Egg Tart"
+		Items.SHRIMP:
+			return "Shrimp Dumpling"
+		Items.TURNIP:
+			return "Turnip Cake"
+		Items.SHUMAI:
+			return "Shumai Dumpling"
+		Items.STEAMED:
+			return "Steamed Bun"
+		Items.CHOPSTICK:
+			return "Chopsticks"
+		_:
+			return "BIGPROBLEM"
