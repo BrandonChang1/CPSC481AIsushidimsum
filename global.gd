@@ -50,3 +50,22 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+
+
+
+func player_string(player:Players) -> String:
+	match player:
+		Players.PLAYER1:
+			return "Player One"
+		Players.PLAYER2:
+			return "Player Two"
+		Players.PLAYER3:
+			return "Player Three"
+		Players.PLAYER4:
+			return "Player Four"
+		Players.PLAYER5:
+			return "Player Five"
+		Players.PLAYER6:
+			return "Player Six"
+		_:
+			return "BIGPROBLEM"

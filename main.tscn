@@ -20,37 +20,18 @@
 script/source = "#the menubuttons should show choices left to right, or in a grid, but whatever
 #make a large dining table for the background
 # for opponents, do simple label counter, for yourself do stacked icons
+# square icons should be somewhat bigger
 extends Control
-
-enum {
-	small_sesame,
-	large_sesame,
-	chive,
-	egg,
-	shrimp,
-	turnip,
-	shumai,
-	steamed,
-	chopstick
-}
-
-enum {
-	player1,
-	player2,
-	player3,
-	player4,
-	player5,
-	player6,
-	nobody
-}
 
 @onready var bowls = [$Bowl0, $Bowl1, $Bowl2, $Bowl3, $Bowl4, $Bowl5]
 @onready var chopsticks = [$Chopstick0, $Chopstick1, $Chopstick2, $Chopstick3, $Chopstick4, $Chopstick5]
 @onready var end_turn = get_node(\"EndTurn\")
-@onready var inventory_texts = [$InventoryP1]
+@onready var inventory_texts = [$InventoryP1, $InventoryP2]
 @onready var moving_item = get_node(\"MovingItem\")
 @onready var steamed_center = $SteamedCenter
+@onready var score_info = $ScoreInfo
 
+const STARTING_CHOPSTICKS = 4
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
 var rotation_degrees_remaining:int = 0
 # should add more logic to this. 0th element is distance from each bowl to player1, etc. if only 2 player, other player always has 3 - current
@@ -61,7 +42,7 @@ var on_board:Array[int] = [Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,G
 
 
 const num_players = 2
-var current_player: Global.Players = Global.Players.PLAYER1
+var current_player: int = Global.Players.PLAYER1
 var inventories: Array[Array] = []
 
 var autoturn:bool = false
@@ -72,13 +53,14 @@ func _ready() -> void:
 	moving_item.move_complete.connect(self.update_inventory_text)
 	
 	for n in num_players:
-		inventories.append([0,0,0,0,0,0,0,0,0]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
+		inventories.append([0,0,0,0,0,0,0,0,STARTING_CHOPSTICKS]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
+		update_inventory_text(n)
 	
 	for n in 6:
 		bowls[n].set_rotation(rotations_start[n])
 		chopsticks[n].set_rotation(rotations_start[n])
 	
-	
+	update_score_text()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -92,35 +74,57 @@ func _process(delta: float) -> void:
 			#bowls[n].set_rotation_degrees(bowls[n].get_rotation_degrees() + 2)
 		rotation_degrees_remaining -= 3 * modifier
 
-func _on_menu_button_food_taken(bowl: int, taken: Global.Items, revealed: Global.Items) -> void:
+
+
+func _on_menu_button_food_taken(bowl: int, taken: Global.Items, revealed: Global.Items) -> void: # dont really need taken. just use on_board[bowl]
 	if game_started:
 		inventories[current_player][taken] += 1
 		take_chopsticks(bowl)
 		moving_item.move_item(taken, steamed_center.position, inventory_texts[current_player].position)
-		# update_inventory_text()
 		print_status()
+	on_board[bowl] = revealed
 	# make new function that does the following: increment the appropriate item, updates the counter. counter needs to be in lockstep with the array variable. and also calculate poitn value.
 
 
-func update_inventory_text() -> void:
+
+func update_inventory_text(player:int = current_player) -> void:
 	var counter:int
 	# await get_tree().create_timer(0.5).timeout # https://forum.godotengine.org/t/is-there-a-wait-function-to-godot/38759
-	inventory_texts[current_player].clear()
+	inventory_texts[player].clear()
 	for item in Global.square_items.size(): # this should prob be number of elements in [current_player][i]. number of total items.
 		counter = 0
-		while counter < inventories[current_player][item]:
-			inventory_texts[current_player].add_image(Global.square_items[item])
+		while counter < inventories[player][item]:
+			inventory_texts[player].add_image(Global.square_items[item])
 			counter += 1
+
+
+
+func update_score_text() -> void:
+	var text:String
+	
+	# this is really ugly
+	for player in inventories.size():
+		text += Global.player_string(player)
+		text += \" has \"
+		text += str(calc_score(inventories[player]))
+		text += \" points\\n\"
+	
+	score_info.set_text(text)
+
 
 
 func print_status() -> void:
 	print(inventories)
 
+
+
 func inc_turn() -> void:
 	current_player += 1
-	if current_player == num_players:
+	update_score_text()
+	if current_player == num_players: # should prob use modulus here
 		current_player = 0
-	print(\"now turn for player \", (current_player + 1))
+	print(\"now turn for player \", (current_player + 1)) # replace with player to string
+
 
 
 func _on_button_pressed(arg1:String) -> void:
@@ -138,13 +142,15 @@ func _on_button_pressed(arg1:String) -> void:
 		print(\"cw button pressed\")
 		rotate_board(1)
 
+
+
 func rotate_board(distance:int) -> void:
 		var temp:int
 		
 		rotation_degrees_remaining += 60 * distance
 		
 		while distance != 0:
-			if game_started:
+			if game_started && ( inventories[current_player][Global.Items.CHOPSTICK] > 0 ):
 				add_chopstick(distances[current_player].find(0))
 			
 			for n in num_players:	# somehow have to do num_players and not distances. too many iterations when use distances.
@@ -162,21 +168,93 @@ func rotate_board(distance:int) -> void:
 		
 		print(\"Distances: \", distances)
 
+
+
 func add_chopstick(index:int) -> void:
+	if inventories[current_player][Global.Items.CHOPSTICK] > 0:
+		inventories[current_player][Global.Items.CHOPSTICK] -= 1
+		update_inventory_text()
 	chopsticks_count[index] += 1
 	update_chopstick(index)
+
+
 
 func take_chopsticks(bowl:int) -> void:
 	inventories[current_player][Global.Items.CHOPSTICK] += chopsticks_count[bowl]
 	chopsticks_count[bowl] = 0
 	update_chopstick(bowl)
-	
+
+
+
 func update_chopstick(index:int) -> void:
 	chopsticks[index].update(chopsticks_count[index])	# should make chopsticks and other things like these singletons. oh well.
+
+
 
 func _on_check_box_toggled(toggled_on: bool) -> void:
 	autoturn = toggled_on
 	print(autoturn)
+
+
+
+func calc_score(inventory: Array) -> int:
+	
+	var score:int = 0
+	
+	# small sesame
+	score += inventory[Global.Items.SMALL_SESAME]
+	# large sesame
+	score += inventory[Global.Items.LARGE_SESAME] * 2
+	# chive
+	score += int(inventory[Global.Items.CHIVE]/2) * 4
+	# egg tart
+	match inventory[Global.Items.EGG]:
+		0:
+			pass
+		1:
+			score += 1
+		2:
+			score += 2
+		3:
+			score += 5
+		4:
+			score += 9
+		_:
+			score += 15
+	score += int( inventory[Global.Items.SHRIMP] / 3 ) * 7	# can also calculate using modulo. subtract modulus then divide.
+	# turnip
+	if inventory[Global.Items.TURNIP] % 2:
+		score += inventory[Global.Items.TURNIP] * 2
+	int( inventory[Global.Items.SHUMAI] / 4 ) * 12
+	# steamed bun scoring. current implementation is simple but sometimes wrong.
+	var steamed_max = 0
+	var steamed_min = 0
+	for player in num_players:
+		if inventories[player][Global.Items.STEAMED] > steamed_max:
+			steamed_max = inventories[player][Global.Items.STEAMED]
+		if inventories[player][Global.Items.STEAMED] < steamed_min:
+			steamed_min = inventories[player][Global.Items.STEAMED]
+	if inventory[Global.Items.STEAMED] == steamed_max:
+		score += 3
+	if inventory[Global.Items.STEAMED] == steamed_min:
+		score -= 3
+	# better but unimplemented. a priority queue would be much better
+	# var steamed_counter: Array[Array] = []
+	# for i in 13:
+	# steamed_counter.append([])
+	# special plates TODO
+	# chopstick
+	score += int( inventory[Global.Items.CHOPSTICK] / 2 )
+	
+	return score
+
+
+
+## not used
+func set_starting_chopsticks() -> void:
+	for player in inventories.size():
+		inventories[player][Global.Items.CHOPSTICK] = 4
+		update_inventory_text(player)
 "
 
 [node name="Control" type="Control"]
@@ -569,7 +647,7 @@ offset_bottom = 1104.0
 mouse_filter = 2
 texture = ExtResource("13_mtfoi")
 
-[node name="InventoryP1" type="RichTextLabel" parent="."]
+[node name="InventoryP1" type="RichTextLabel" parent="." groups=["inventories"]]
 layout_mode = 0
 offset_left = 1336.0
 offset_top = 912.0
@@ -582,6 +660,20 @@ layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("15_kwwil")
+
+[node name="ScoreInfo" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1392.0
+offset_top = 320.0
+offset_right = 1608.0
+offset_bottom = 424.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+
+[node name="InventoryP2" type="RichTextLabel" parent="." groups=["inventories"]]
+offset_left = 696.0
+offset_top = 4.0
+offset_right = 1040.0
+offset_bottom = 172.0
 
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl1" to="." method="_on_menu_button_food_taken"]
