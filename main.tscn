@@ -157,7 +157,6 @@ func rotate_board(distance:int) -> void:
 			bowls[n].rotational_position = (bowls[n].rotational_position + distance) % 6
 			if bowls[n].rotational_position < 0:
 				bowls[n].rotational_position = 5
-			print(bowls[n].rotational_position)
 		rotation_degrees_remaining += 60 * distance
 		
 		while distance != 0:
