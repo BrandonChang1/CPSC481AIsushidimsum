@@ -18,6 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 Global="*res://global.gd"
+Scoring="*res://scoring.gd"
+ControlAddition="*res://control_addition.gd"
 
 [display]
 

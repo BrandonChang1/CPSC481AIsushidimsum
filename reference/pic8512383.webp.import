@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bjo54s6jc3v50"
-path="res://.godot/imported/white-pattern-lines-stripes-tablecloth-light-701812-wallhere.com.jpg-a3728e79e19ec110bb8d76252c589631.ctex"
+uid="uid://2cyo58waipt8"
+path="res://.godot/imported/pic8512383.webp-bab2a51fbf008cd9ab74a276eb13770d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://white-pattern-lines-stripes-tablecloth-light-701812-wallhere.com.jpg"
-dest_files=["res://.godot/imported/white-pattern-lines-stripes-tablecloth-light-701812-wallhere.com.jpg-a3728e79e19ec110bb8d76252c589631.ctex"]
+source_file="res://reference/pic8512383.webp"
+dest_files=["res://.godot/imported/pic8512383.webp-bab2a51fbf008cd9ab74a276eb13770d.ctex"]
 
 [params]
 

@@ -13,7 +13,7 @@
 [ext_resource type="StyleBox" uid="uid://cg0uhgpnaybyk" path="res://wood_brown_style_box_flat.tres" id="11_xn3s5"]
 [ext_resource type="Script" path="res://chopstick.gd" id="12_1jv5p"]
 [ext_resource type="Texture2D" uid="uid://lq6x5plb66g6" path="res://images/steamedbun.png" id="12_kd18h"]
-[ext_resource type="Texture2D" uid="uid://bjo54s6jc3v50" path="res://white-pattern-lines-stripes-tablecloth-light-701812-wallhere.com.jpg" id="13_mtfoi"]
+[ext_resource type="Texture2D" path="res://white-pattern-lines-stripes-tablecloth-light-701812-wallhere.com.jpg" id="13_mtfoi"]
 [ext_resource type="Script" path="res://moving_food.gd" id="15_kwwil"]
 
 [sub_resource type="GDScript" id="GDScript_pa3jy"]

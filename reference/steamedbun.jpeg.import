@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://qv7ep70ci06k"
-path="res://.godot/imported/vlcsnap-2024-11-29-02h37m10s267.jpg-e3b27dc607c8ac27d6f7f35dd2e2f020.ctex"
+uid="uid://cgdneyi54s0tu"
+path="res://.godot/imported/steamedbun.jpeg-ba382b2ee2f3596aefad162c4ee13801.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://vlcsnap-2024-11-29-02h37m10s267.jpg"
-dest_files=["res://.godot/imported/vlcsnap-2024-11-29-02h37m10s267.jpg-e3b27dc607c8ac27d6f7f35dd2e2f020.ctex"]
+source_file="res://reference/steamedbun.jpeg"
+dest_files=["res://.godot/imported/steamedbun.jpeg-ba382b2ee2f3596aefad162c4ee13801.ctex"]
 
 [params]
 
