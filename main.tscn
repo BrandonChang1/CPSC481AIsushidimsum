@@ -55,13 +55,13 @@ var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5
 var rotation_degrees_remaining:int = 0
 # should add more logic to this. 0th element is distance from each bowl to player1, etc. if only 2 player, other player always has 3 - current
 var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # seeded with the starting distances. need as many elements as there are players.
-var chopsticks_count = [0, 0, 0, 0, 0, 0]
-var steamed_bun_owner: int = nobody
+var chopsticks_count = [0, 0, 0, 0, 0, 0] # for the bowls. need to change name so this is more clear.
+var steamed_bun_owner: Global.Players = Global.Players.NOBODY
 var on_board:Array[int] = [Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME] 
 
 
 const num_players = 2
-var current_player = 0
+var current_player: Global.Players = Global.Players.PLAYER1
 var inventories: Array[Array] = []
 
 var autoturn:bool = false
@@ -105,24 +105,9 @@ func _on_menu_button_food_taken(bowl: int, taken: Global.Items, revealed: Global
 func update_inventory_text() -> void:
 	# await get_tree().create_timer(0.5).timeout # https://forum.godotengine.org/t/is-there-a-wait-function-to-godot/38759
 	inventory_texts[current_player].clear()
-	for n in inventories[current_player][Global.Items.SMALL_SESAME]:
-		inventory_texts[current_player].add_image(Global.square_items[0])
-	for n in inventories[current_player][Global.Items.LARGE_SESAME]:
-		inventory_texts[current_player].add_image(Global.square_items[1])
-	for n in inventories[current_player][Global.Items.CHIVE]:
-		inventory_texts[current_player].add_image(Global.square_items[2])
-	for n in inventories[current_player][3]:
-		inventory_texts[current_player].add_image(Global.square_items[3])
-	for n in inventories[current_player][4]:
-		inventory_texts[current_player].add_image(Global.square_items[4])
-	for n in inventories[current_player][5]:
-		inventory_texts[current_player].add_image(Global.square_items[5])
-	for n in inventories[current_player][6]:
-		inventory_texts[current_player].add_image(Global.square_items[6])
-	for n in inventories[current_player][7]:
-		inventory_texts[current_player].add_image(Global.square_items[7])
-	for n in inventories[current_player][8]:
-		inventory_texts[current_player].add_image(Global.square_items[8])
+	for i in Global.square_items: # this should prob be number of elements in [current_player][i]. number of total items.
+		for n in inventories[current_player][i]:
+			inventory_texts[current_player].add_image(Global.square_items[n])
 
 
 func print_status() -> void:
@@ -179,7 +164,7 @@ func add_chopstick(index:int) -> void:
 	update_chopstick(index)
 
 func take_chopsticks(bowl:int) -> void:
-	inventories[current_player][chopstick] += chopsticks_count[bowl]
+	inventories[current_player][Global.Items.CHOPSTICK] += chopsticks_count[bowl]
 	chopsticks_count[bowl] = 0
 	update_chopstick(bowl)
 	
