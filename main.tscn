@@ -38,8 +38,9 @@ var rotation_degrees_remaining:int = 0
 var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # seeded with the starting distances. need as many elements as there are players.
 var chopsticks_count = [0, 0, 0, 0, 0, 0] # for the bowls. need to change name so this is more clear.
 var steamed_bun_owner: Global.Players = Global.Players.NOBODY
-var on_board:Array[int] = [Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME] 
-
+# would be better if exports were used instead of yet another array for what is on the board.
+#var on_board:Array[int] = [Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME] 
+var on_board:Array[Global.Items] = []
 
 const num_players = 2
 var current_player: int = Global.Players.PLAYER1
@@ -51,6 +52,8 @@ var game_started:bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	moving_item.move_complete.connect(self.update_inventory_text)
+	
+	on_board = [bowls[0].current_item, bowls[1].current_item, bowls[2].current_item, bowls[3].current_item, bowls[4].current_item, bowls[5].current_item]
 	
 	for n in num_players:
 		inventories.append([0,0,0,0,0,0,0,0,STARTING_CHOPSTICKS]) # watch out, this is a shallow copy. see the abandoned mahjong for more on this.
@@ -141,6 +144,7 @@ func _on_button_pressed(arg1:String) -> void:
 	if arg1 == \"cw\":
 		print(\"cw button pressed\")
 		rotate_board(1)
+	update_score_text()
 
 
 
@@ -167,6 +171,7 @@ func rotate_board(distance:int) -> void:
 				distance += 1
 		
 		print(\"Distances: \", distances)
+		update_score_text()
 
 
 
@@ -535,6 +540,19 @@ offset_left = 688.0
 offset_top = 848.0
 offset_right = 1083.0
 offset_bottom = 934.0
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_normal_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_disabled_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 24
 text = "Automatically Switch Turns"
 

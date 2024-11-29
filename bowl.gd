@@ -1,7 +1,9 @@
+# todo: make current item tightly coupled with button icon
+
 extends MenuButton
 
 @export var bowl_index:int = 0
-var current_item = 0
+@export var current_item:Global.Items = Global.Items.SMALL_SESAME
 
 # should these be in the global instead?
 var smallsesame_image = preload("res://images/smallsesame.png")
