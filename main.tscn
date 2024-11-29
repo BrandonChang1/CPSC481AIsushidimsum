@@ -133,11 +133,12 @@ func inc_turn() -> void:
 func _on_button_pressed(arg1:String) -> void:
 	if arg1 == \"turn\":
 		if !game_started:
-			end_turn.set_text(\"End Turn\")
 			game_started = true
+			end_turn.set_text(\"End Turn for \" + Global.player_string(current_player))
 			print(\"Game Start\")
 		else:
 			inc_turn()
+			end_turn.set_text(\"End Turn for \" + Global.player_string(current_player))
 	if arg1 == \"ccw\":
 		print(\"ccw button pressed\")
 		rotate_board(-1)
@@ -526,11 +527,11 @@ metadata/current_item = 0
 [node name="EndTurn" type="Button" parent="."]
 top_level = true
 layout_mode = 0
-offset_left = 664.0
-offset_top = 920.0
-offset_right = 1064.0
-offset_bottom = 1068.0
-theme_override_font_sizes/font_size = 48
+offset_left = 576.0
+offset_top = 924.0
+offset_right = 1151.0
+offset_bottom = 1072.0
+theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Start Game"
 
@@ -558,10 +559,10 @@ text = "Automatically Switch Turns"
 
 [node name="Clockwise" type="Button" parent="."]
 layout_mode = 0
-offset_left = 608.0
-offset_top = 776.0
-offset_right = 771.0
-offset_bottom = 854.0
+offset_left = 576.0
+offset_top = 784.0
+offset_right = 739.0
+offset_bottom = 862.0
 theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Clockwise"
 
@@ -647,10 +648,10 @@ texture = ExtResource("12_kd18h")
 
 [node name="CCwise" type="Button" parent="."]
 layout_mode = 0
-offset_left = 952.0
-offset_top = 776.0
-offset_right = 1115.0
-offset_bottom = 854.0
+offset_left = 988.0
+offset_top = 784.0
+offset_right = 1151.0
+offset_bottom = 862.0
 theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Counterclockwise"
 

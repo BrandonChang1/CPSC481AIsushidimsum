@@ -27,6 +27,11 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
+
+func rotate(degrees: int) -> void:
+	self.set_rotation_degrees(self.get_rotation_degrees() + degrees)
+
+
 func _on_item_menu_pressed(id: int):
 	print("Bowl ", bowl_index, " was ", current_item , " now ", id)
 	food_taken.emit(bowl_index,current_item,id)
@@ -48,6 +53,3 @@ func _on_item_menu_pressed(id: int):
 			set_button_icon(shumai_image)
 		7:
 			set_button_icon(steamed_image)
-
-func rotate(degrees: int) -> void:
-	self.set_rotation_degrees(self.get_rotation_degrees() + degrees)

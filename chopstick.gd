@@ -10,8 +10,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
+
 func rotate(degrees: int) -> void:
 	self.set_rotation_degrees(self.get_rotation_degrees() + degrees)
+
 
 func update(count:int) -> void:
 	self.clear()
