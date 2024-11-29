@@ -46,6 +46,7 @@ enum {
 @onready var bowls = [$Bowl0, $Bowl1, $Bowl2, $Bowl3, $Bowl4, $Bowl5]
 @onready var chopsticks = [$Chopstick0, $Chopstick1, $Chopstick2, $Chopstick3, $Chopstick4, $Chopstick5]
 @onready var end_turn = get_node(\"EndTurn\")
+@onready var inventory_p1 = get_node(\"InventoryP1\")
 
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5] # need to use radians. if degrees, floating point bullshit occurs
 var rotation_degrees_remaining:int = 0
@@ -72,6 +73,9 @@ func _ready() -> void:
 	for n in 6:
 		bowls[n].set_rotation(rotations_start[n])
 		chopsticks[n].set_rotation(rotations_start[n])
+	
+	
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -423,27 +427,6 @@ bowl_index = 5
 metadata/bowl_index = 0
 metadata/current_item = 0
 
-[node name="MaxSmallSesameCounter" type="Label" parent="."]
-layout_mode = 0
-offset_left = 364.0
-offset_top = 283.0
-offset_right = 457.0
-offset_bottom = 341.0
-
-[node name="MaxLargeSesameCounter" type="Label" parent="."]
-layout_mode = 0
-offset_left = 350.0
-offset_top = 590.0
-offset_right = 390.0
-offset_bottom = 613.0
-
-[node name="MaxChiveCounter" type="Label" parent="."]
-layout_mode = 0
-offset_left = 364.0
-offset_top = 364.0
-offset_right = 404.0
-offset_bottom = 387.0
-
 [node name="EndTurn" type="Button" parent="."]
 top_level = true
 layout_mode = 0
@@ -557,6 +540,7 @@ theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Counterclockwise"
 
 [node name="Background" type="TextureRect" parent="."]
+visible = false
 z_index = -1
 layout_mode = 0
 offset_left = -72.0
@@ -565,6 +549,13 @@ offset_right = 1848.0
 offset_bottom = 1104.0
 mouse_filter = 2
 texture = ExtResource("13_mtfoi")
+
+[node name="InventoryP1" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_left = 1336.0
+offset_top = 912.0
+offset_right = 1584.0
+offset_bottom = 1024.0
 
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl1" to="." method="_on_menu_button_food_taken"]
