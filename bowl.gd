@@ -22,14 +22,6 @@ func rotate(degrees: int) -> void:
 	self.set_rotation_degrees(self.get_rotation_degrees() + degrees)
 
 
-func _about_to_popup():
-	print("i'm popping up")
-	var random_choice:int = randi_range(0, get_item_count() - 1)
-	for n in get_item_count():
-		get_popup().set_item_text(n, Global.item_string(n))
-	get_popup().set_item_text(random_choice, (get_popup().get_item_text(random_choice) + "RANDOM CHOICE"))
-
-
 func _on_item_menu_pressed(id: int):
 	print("Bowl ", bowl_index, " was ", current_item , " now ", id)
 	food_taken.emit(bowl_index,current_item,id)
@@ -51,3 +43,10 @@ func _on_item_menu_pressed(id: int):
 			set_button_icon(Global.shumai_image)
 		7:
 			set_button_icon(Global.steamed_image)
+
+
+func _on_about_to_popup() -> void:
+	var random_choice:int = randi_range(0, get_item_count() - 1)
+	for n in get_item_count():
+		get_popup().set_item_text(n, Global.item_string(n))
+	get_popup().set_item_text(random_choice, (get_popup().get_item_text(random_choice) + " *RANDOM CHOICE*"))
