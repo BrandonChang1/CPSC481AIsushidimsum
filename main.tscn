@@ -151,8 +151,8 @@ func update_bowl_values() -> void:
 	for n in Global.bowls.size():
 		if can_player_reach(Global.current_player, n):
 			var bowl_value = Scoring.expected_value(n, Global.inventories[Global.current_player], Global.current_player)
-			var format_string = \"Total Value of Bowl %d: %s, a gain of %s points.\\n\"
-			var actual_string = format_string % [n, bowl_value, bowl_value - Scoring.calc_score(Global.inventories[Global.current_player])]
+			var format_string = \"Total Value of Bowl %d: %s, a gain of %s value.\\n\"
+			var actual_string = format_string % [n, bowl_value, bowl_value - Scoring.expected_value(-1, Global.inventories[Global.current_player], Global.current_player)]
 			text += actual_string
 	
 	# add recommended bowl is x

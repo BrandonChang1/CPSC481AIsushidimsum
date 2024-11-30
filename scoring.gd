@@ -24,21 +24,22 @@ func expected_value(bowl: int, inventory:Array, perspective:Global.Players) -> f
 	var value:float = 0
 	
 	var hypothetical_inventory = inventory.duplicate(true) # not sure if this is necessary, but need to make deep copy
-	hypothetical_inventory[Global.bowls[bowl].current_item] += 1
-	hypothetical_inventory[Global.Items.CHOPSTICK] -= Global.distances[perspective][bowl]
-	hypothetical_inventory[Global.Items.CHOPSTICK] += Global.chopsticks[bowl].chopsticks
+	if bowl != -1:
+		hypothetical_inventory[Global.bowls[bowl].current_item] += 1
+		hypothetical_inventory[Global.Items.CHOPSTICK] -= Global.distances[perspective][bowl]
+		hypothetical_inventory[Global.Items.CHOPSTICK] += Global.chopsticks[bowl].chopsticks
 	
-	value += mod_small_value(inventory[Global.Items.SMALL_SESAME])
-	value += mod_large_value(inventory[Global.Items.LARGE_SESAME])
-	value += mod_chive_value(inventory[Global.Items.CHIVE])
-	value += mod_egg_value(inventory[Global.Items.EGG])
-	value += mod_shrimp_value(inventory[Global.Items.SHRIMP])
-	value += mod_turnip_value(inventory[Global.Items.TURNIP])
-	value += mod_shumai_value(inventory[Global.Items.SHUMAI])
-	value += mod_steamed_value(inventory[Global.Items.STEAMED])
+	value += mod_small_value(hypothetical_inventory[Global.Items.SMALL_SESAME])
+	value += mod_large_value(hypothetical_inventory[Global.Items.LARGE_SESAME])
+	value += mod_chive_value(hypothetical_inventory[Global.Items.CHIVE])
+	value += mod_egg_value(hypothetical_inventory[Global.Items.EGG])
+	value += mod_shrimp_value(hypothetical_inventory[Global.Items.SHRIMP])
+	value += mod_turnip_value(hypothetical_inventory[Global.Items.TURNIP])
+	value += mod_shumai_value(hypothetical_inventory[Global.Items.SHUMAI])
+	value += mod_steamed_value(hypothetical_inventory[Global.Items.STEAMED])
 	# special plates TODO
 	
-	value += mod_chopstick_value(inventory[Global.Items.CHOPSTICK], perspective)
+	value += mod_chopstick_value(hypothetical_inventory[Global.Items.CHOPSTICK], perspective)
 
 	return value - calc_score(Global.inventories[perspective])
 
