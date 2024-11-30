@@ -130,6 +130,9 @@ func _on_button_pressed(arg1:String) -> void:
 			end_turn.set_text(\"End Turn for \" + Global.player_string(Global.current_player))
 			print(\"Game Start\")
 		else:
+			if is_game_over():
+				end_turn.set_text(\"Game Over\")
+				return
 			inc_turn()
 			end_turn.set_text(\"End Turn for \" + Global.player_string(Global.current_player))
 		update_bowl_values()
@@ -142,20 +145,34 @@ func _on_button_pressed(arg1:String) -> void:
 	update_score_text()
 
 
+func is_game_over() -> bool:
+	for n in Global.inventories.size():
+		if Scoring.foods_possessed(n) < 12:
+			return false
+	return true
+
 
 func update_bowl_values() -> void:
+
+	var suggested_choice:int = 0
+	var hiscore:float = 0
 	
 	var prep_text = \"Modified chopstick value of %d chopsticks is %s\\n\"
 	var text = prep_text % [Global.inventories[Global.current_player][Global.Items.CHOPSTICK], Scoring.mod_chopstick_value(Global.inventories[Global.current_player][Global.Items.CHOPSTICK], Global.current_player)]
 	
+	text += \"For \" + Global.player_string(Global.current_player) + \":\\n\"
+	
 	for n in Global.bowls.size():
 		if can_player_reach(Global.current_player, n):
 			var bowl_value = Scoring.expected_value(n, Global.inventories[Global.current_player], Global.current_player)
+			if bowl_value > hiscore:
+				hiscore = bowl_value
+				suggested_choice = n
 			var format_string = \"Total Value of Bowl %d: %s, a gain of %s value.\\n\"
 			var actual_string = format_string % [n, bowl_value, bowl_value - Scoring.expected_value(-1, Global.inventories[Global.current_player], Global.current_player)]
 			text += actual_string
 	
-	# add recommended bowl is x
+	text += \"Recommended action is choosing bowl \" + str(suggested_choice)
 	
 	bowl_values.set_text(text)
 
@@ -202,7 +219,7 @@ func add_chopstick(index:int) -> void:
 
 
 func take_chopsticks(bowl:int) -> void:
-	Global.inventories[Global.current_player][Global.Items.CHOPSTICK] += Global.chopsticks_count[bowl]
+	Global.inventories[Global.current_player][Global.Items.CHOPSTICK] += Global.chopsticks[bowl].chopsticks
 	Global.chopsticks[bowl].chopsticks = 0
 	update_chopstick(bowl)
 

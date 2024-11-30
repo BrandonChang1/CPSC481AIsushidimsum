@@ -44,18 +44,22 @@ func expected_value(bowl: int, inventory:Array, perspective:Global.Players) -> f
 	return value - calc_score(Global.inventories[perspective])
 
 
+## 1 point each
 func small_value(quant:int) -> int:
 	assert(quant >= 0)
 	return quant
 
+## 2 points each
 func large_value(quant:int) -> int:
 	assert(quant >= 0)
 	return quant * 2
 
+## 4 points per set of 2
 func chive_value(quant:int) -> int:
 	assert(quant >= 0)
 	return int(quant/2) * 4
 
+## 1 point for 1, 2 points for 2, 5 points for 3, 9 points for 4, 15 points for 5+
 func egg_value(quant:int) -> int:
 	assert(quant >= 0)
 	match quant:
@@ -72,16 +76,19 @@ func egg_value(quant:int) -> int:
 		_:
 			return 15
 
+## 7 points per set of 3
 func shrimp_value(quant:int) -> int:
 	assert(quant >= 0)
 	return int( quant / 3 ) * 7	# can also calculate using modulo. subtract modulus then divide.
 
+## 2 points each if odd amount
 func turnip_value(quant:int) -> int:
 	assert(quant >= 0)
 	if quant % 2:
 		return quant * 2
 	return 0
 
+## 12 points per set of 4
 func shumai_value(quant:int) -> int:
 	assert(quant >= 0)
 	return int( quant / 4 ) * 12
@@ -108,6 +115,7 @@ func steamed_value(quant:int) -> int:
 		score += -3
 	return score
 
+## 1 point per set of 2
 func chopstick_value(quant:int) -> int:
 	assert(quant >= 0)
 	return int( quant / 2 )
