@@ -19,7 +19,7 @@
 [sub_resource type="GDScript" id="GDScript_pa3jy"]
 script/source = "#the menubuttons should show choices left to right, or in a grid, but whatever
 #make a large dining table for the background
-# for opponents, do simple label counter, for yourself do stacked icons
+# another way to reduce coupling is maybe to split up this script file into another one like at https://stackoverflow.com/questions/78057743/organizing-complex-libraries-in-gdscript .then you wont need an autoload
 # square icons should be somewhat bigger
 extends Control
 
@@ -33,7 +33,6 @@ extends Control
 
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5]
 var rotation_degrees_remaining:int = 0
-# should add more logic to this. 0th element is distance from each bowl to player1, etc. if only 2 player, other player always has 3 - current
 
 # would be better if exports were used instead of yet another array for what is on the board.
 #var on_board:Array[int] = [Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME,Global.Items.SMALL_SESAME] 
@@ -199,7 +198,7 @@ func update_chopstick(index:int) -> void:
 func _on_check_box_toggled(toggled_on: bool) -> void:
 	Global.autoturn = toggled_on
 	print(Global.autoturn)
-	
+
 
 
 ## not used
