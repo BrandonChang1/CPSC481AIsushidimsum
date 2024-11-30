@@ -22,10 +22,10 @@ enum Players {
 	NOBODY
 }
 
-var num_players = 2
+var num_players := 2
 
 var inventories: Array[Array] = []
-const STARTING_CHOPSTICKS = 4
+const STARTING_CHOPSTICKS := 4
 
 var smallsesame_image = preload("res://images/smallsesame.png")
 var largesesame_image = preload("res://images/largesesame.png")
@@ -40,7 +40,6 @@ var square_items:Array[Resource] = []
 var bowls = []
 var chopsticks = []
 var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # seeded with the starting distances. need as many elements as there are players.
-var chopsticks_count = [0, 0, 0, 0, 0, 0] # for the bowls. need to change name so this is more clear.
 var steamed_bun_owner: Players = Players.NOBODY
 var on_board:Array[Items] = []
 var current_player: int = Players.PLAYER1

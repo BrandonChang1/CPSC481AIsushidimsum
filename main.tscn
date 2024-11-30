@@ -17,10 +17,8 @@
 [ext_resource type="Script" path="res://moving_food.gd" id="15_kwwil"]
 
 [sub_resource type="GDScript" id="GDScript_pa3jy"]
-script/source = "#the menubuttons should show choices left to right, or in a grid, but whatever
-#make a large dining table for the background
-# another way to reduce coupling is maybe to split up this script file into another one like at https://stackoverflow.com/questions/78057743/organizing-complex-libraries-in-gdscript .then you wont need an autoload
-# square icons should be somewhat bigger
+script/source = "#make a large dining table for the background
+
 extends Control
 
 
@@ -30,6 +28,7 @@ extends Control
 @onready var moving_item = get_node(\"MovingItem\")
 @onready var steamed_center = $SteamedCenter
 @onready var score_info = $ScoreInfo
+@onready var bowl_values = $BowlValues
 
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5]
 var rotation_degrees_remaining:int = 0
@@ -133,6 +132,7 @@ func _on_button_pressed(arg1:String) -> void:
 		else:
 			inc_turn()
 			end_turn.set_text(\"End Turn for \" + Global.player_string(Global.current_player))
+		update_bowl_values()
 	if arg1 == \"ccw\":
 		print(\"ccw button pressed\")
 		rotate_board(-1)
@@ -140,6 +140,24 @@ func _on_button_pressed(arg1:String) -> void:
 		print(\"cw button pressed\")
 		rotate_board(1)
 	update_score_text()
+
+
+
+func update_bowl_values() -> void:
+	
+	var prep_text = \"Modified chopstick value of %d chopsticks is %s\\n\"
+	var text = prep_text % [Global.inventories[Global.current_player][Global.Items.CHOPSTICK], Scoring.mod_chopstick_value(Global.inventories[Global.current_player][Global.Items.CHOPSTICK], Global.current_player)]
+	
+	for n in Global.bowls.size():
+		if can_player_reach(Global.current_player, n):
+			var bowl_value = Scoring.expected_value(n, Global.inventories[Global.current_player], Global.current_player)
+			var format_string = \"Total Value of Bowl %d: %s, a gain of %s points.\\n\"
+			var actual_string = format_string % [n, bowl_value, bowl_value - Scoring.calc_score(Global.inventories[Global.current_player])]
+			text += actual_string
+	
+	# add recommended bowl is x
+	
+	bowl_values.set_text(text)
 
 
 
@@ -178,20 +196,20 @@ func add_chopstick(index:int) -> void:
 	if Global.inventories[Global.current_player][Global.Items.CHOPSTICK] > 0:
 		Global.inventories[Global.current_player][Global.Items.CHOPSTICK] -= 1
 		update_inventory_text()
-	Global.chopsticks_count[index] += 1
+	Global.chopsticks[index].chopsticks += 1
 	update_chopstick(index)
 
 
 
 func take_chopsticks(bowl:int) -> void:
 	Global.inventories[Global.current_player][Global.Items.CHOPSTICK] += Global.chopsticks_count[bowl]
-	Global.chopsticks_count[bowl] = 0
+	Global.chopsticks[bowl].chopsticks = 0
 	update_chopstick(bowl)
 
 
 
 func update_chopstick(index:int) -> void:
-	Global.chopsticks[index].update(Global.chopsticks_count[index])	# should make chopsticks and other things like these singletons. oh well.
+	Global.chopsticks[index].update()
 
 
 
@@ -206,6 +224,11 @@ func set_starting_chopsticks() -> void:
 	for player in Global.inventories.size():
 		Global.inventories[player][Global.Items.CHOPSTICK] = 4
 		update_inventory_text(player)
+
+
+
+func can_player_reach(player:Global.Players, bowl_index:int) -> bool:
+	return Global.inventories[player][Global.Items.CHOPSTICK] >= Global.distances[player][bowl_index]
 "
 
 [node name="Control" type="Control"]
@@ -519,39 +542,41 @@ text = "Clockwise"
 
 [node name="Chopstick0" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 824.0
+offset_left = 832.0
 offset_top = 256.0
 offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
 theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick1" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 824.0
+offset_left = 832.0
 offset_top = 256.0
 offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
 theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
+bowl = 1
 
 [node name="Chopstick2" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 824.0
+offset_left = 832.0
 offset_top = 256.0
 offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
 theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
+bowl = 2
 
 [node name="Chopstick3" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
@@ -562,32 +587,35 @@ offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
 theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
+bowl = 3
 
 [node name="Chopstick4" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 824.0
+offset_left = 832.0
 offset_top = 256.0
 offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
 theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
+bowl = 4
 
 [node name="Chopstick5" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 824.0
+offset_left = 832.0
 offset_top = 256.0
 offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
 theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
+bowl = 5
 
 [node name="SteamedCenter" type="TextureRect" parent="."]
 layout_mode = 0
@@ -698,6 +726,15 @@ offset_top = 392.0
 offset_right = 680.0
 offset_bottom = 432.0
 mouse_filter = 2
+
+[node name="BowlValues" type="Label" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 128.0
+offset_right = 728.0
+offset_bottom = 776.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
 
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl1" to="." method="_on_menu_button_food_taken"]
