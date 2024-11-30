@@ -6,7 +6,6 @@ extends MenuButton
 @export var current_item:Global.Items = Global.Items.SMALL_SESAME
 @export var rotational_position:int = 0
 
-
 signal food_taken(bowl:int,taken:int,revealed:int)
 
 # Called when the node enters the scene tree for the first time.

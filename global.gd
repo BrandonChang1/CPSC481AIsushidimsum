@@ -37,7 +37,15 @@ var shumai_image = preload("res://images/shumai.png")
 var steamed_image = preload("res://images/steamed.png")
 
 var square_items:Array[Resource] = []
-
+var bowls = []
+var chopsticks = []
+var distances = [[3, 2, 1, 0, 1, 2], [0, 1, 2, 3, 2, 1]] # seeded with the starting distances. need as many elements as there are players.
+var chopsticks_count = [0, 0, 0, 0, 0, 0] # for the bowls. need to change name so this is more clear.
+var steamed_bun_owner: Players = Players.NOBODY
+var on_board:Array[Items] = []
+var current_player: int = Players.PLAYER1
+var autoturn:bool = false
+var game_started:bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
