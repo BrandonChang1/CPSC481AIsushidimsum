@@ -152,6 +152,8 @@ func is_game_over() -> bool:
 	return true
 
 
+# need to calculate value of the board (accessible bowls) for each player, and if it drops a lot for a certain action, that gets a bonus
+# simpler offensive move is to calculate the value of a bowl for an opponent, and if it is high and you can move it away, then that gets a bonus
 func update_bowl_values() -> void:
 
 	var suggested_choice:int = 0
