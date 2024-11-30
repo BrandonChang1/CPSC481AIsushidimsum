@@ -40,6 +40,7 @@ var rotation_degrees_remaining:int = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	randomize()
 	Global.bowls = [$Bowl0, $Bowl1, $Bowl2, $Bowl3, $Bowl4, $Bowl5]
 	Global.chopsticks = [$Chopstick0, $Chopstick1, $Chopstick2, $Chopstick3, $Chopstick4, $Chopstick5]
 	Global.on_board = [Global.bowls[0].current_item, Global.bowls[1].current_item, Global.bowls[2].current_item, Global.bowls[3].current_item, Global.bowls[4].current_item, Global.bowls[5].current_item]
@@ -758,6 +759,7 @@ theme_override_font_sizes/font_size = 24
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl1" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl2" to="." method="_on_menu_button_food_taken"]
+[connection signal="about_to_popup" from="Bowl3" to="Bowl3" method="_on_about_to_popup"]
 [connection signal="food_taken" from="Bowl3" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl4" to="." method="_on_menu_button_food_taken"]
 [connection signal="food_taken" from="Bowl5" to="." method="_on_menu_button_food_taken"]
