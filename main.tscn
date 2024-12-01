@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://unrxlwdu170"]
+[gd_scene load_steps=18 format=3 uid="uid://unrxlwdu170"]
 
 [ext_resource type="Texture2D" uid="uid://cbw7j851kawpy" path="res://images/smallsesame.png" id="1_tg8bt"]
 [ext_resource type="Texture2D" uid="uid://d2g585c1du0r4" path="res://images/smallsesame_sq.png" id="2_hj5bs"]
@@ -72,10 +72,9 @@ class Inventory:
 	var shumai := 0
 	var steamed := 0
 	var chopstick := 0
-	var bun := false
 	
 	func array() -> Array:
-		return [small_sesame, large_sesame, chive, egg, shrimp, turnip, shumai, steamed, chopstick, bun]
+		return [small_sesame, large_sesame, chive, egg, shrimp, turnip, shumai, steamed, chopstick]
 	
 	func food_count() -> int:
 		return small_sesame + large_sesame + chive + egg + shrimp + turnip + shumai + steamed
@@ -84,13 +83,15 @@ class Inventory:
 class GameState:
 	static var closest_bowls:Dictionary = {Players.ONE: 3, Players.TWO: 0}
 	
+	var actual:bool = false # if this state represents the real board, true. If hypothetical, false.
 	var bowls:Array[Bowl] = []
 	var inventories:Array[Inventory] = []
-	var bun_in_center:bool = true
+	var bun_owner:int = Players.NOBODY
 	var in_progress:bool = false
 	var current_player:Players = Players.NOBODY
 	
-	func _init():
+	func _init(real:bool = false):
+		real = actual
 		for i in NUM_BOWLS:
 			bowls.append(Bowl.new(i))
 		for i in NUM_PLAYERS:
@@ -144,15 +145,17 @@ class GameState:
 			var temp = distances.pop_back()
 			distances.push_front(temp)
 		return distances[location]
+	
 
 
 @onready var position_markers = [$Position0, $Position1, $Position2, $Position3, $Position4, $Position5]
 @onready var end_turn = get_node(\"EndTurn\")
 @onready var inventory_texts = [$InventoryP1, $InventoryP2]
+@onready var steamed_bun = $SteamedBun
 @onready var moving_item = get_node(\"MovingItem\")
-@onready var steamed_center = $SteamedCenter
 @onready var score_info = $ScoreInfo
 @onready var bowl_values = $BowlValues
+@onready var current_state:GameState = GameState.new(true)
 
 var rotations_start = [0, 2*PI/6, 2*PI/6 * 2, 2*PI/6 * 3, 2*PI/6 * 4, 2*PI/6 * 5]
 var rotation_degrees_remaining:int = 0
@@ -198,6 +201,8 @@ func _process(delta: float) -> void:
 
 func _on_menu_button_food_taken(bowl: int, taken: Global.Items, revealed: Global.Items) -> void: # dont really need taken. just use on_board[bowl]
 	if Global.game_started:
+		if taken == Items.STEAMED:
+			move_steamed(Global.current_player)
 		Global.inventories[Global.current_player][taken] += 1
 		take_chopsticks(bowl)
 		update_score_text()
@@ -372,6 +377,38 @@ func set_starting_chopsticks() -> void:
 
 func can_player_reach(player:Global.Players, bowl_index:int) -> bool:
 	return Global.inventories[player][Global.Items.CHOPSTICK] >= Global.distances[player][bowl_index]
+
+
+
+func move_steamed(new_owner:int) -> void:
+	# if actual == false:
+	# 	return
+	# this is messed up. hardcoded locations
+	match new_owner:
+		Players.ONE:
+			steamed_bun.destination = Vector2(940,968)
+		Players.TWO:
+			steamed_bun.destination = Vector2(640,4)
+		Players.NOBODY:
+			steamed_bun.destination = Vector2(796,480)
+		_:
+			assert(false)
+"
+
+[sub_resource type="GDScript" id="GDScript_flw3a"]
+script/source = "extends TextureRect
+
+@export var destination:Vector2 = Vector2(796,480)
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	if self.position != self.destination:
+		self.position = self.position.move_toward(self.destination, delta * 2000)
 "
 
 [node name="Control" type="Control"]
@@ -755,13 +792,14 @@ theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
 bowl = 5
 
-[node name="SteamedCenter" type="TextureRect" parent="."]
+[node name="SteamedBun" type="TextureRect" parent="."]
 layout_mode = 0
 offset_left = 796.0
 offset_top = 480.0
 offset_right = 936.0
 offset_bottom = 606.0
 texture = ExtResource("12_kd18h")
+script = SubResource("GDScript_flw3a")
 
 [node name="CCwise" type="Button" parent="."]
 layout_mode = 0
@@ -814,9 +852,9 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 
 [node name="InventoryP2" type="RichTextLabel" parent="." groups=["inventories"]]
 layout_mode = 0
-offset_left = 796.0
+offset_left = 787.0
 offset_top = 16.0
-offset_right = 972.0
+offset_right = 963.0
 offset_bottom = 188.0
 
 [node name="Position0" type="Control" parent="."]
@@ -872,30 +910,30 @@ offset_right = 680.0
 offset_bottom = 432.0
 mouse_filter = 2
 
-[node name="BowlValues" type="Label" parent="."]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 128.0
-offset_right = 728.0
-offset_bottom = 776.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 24
-
-[node name="CCwise" type="Button" parent="BowlValues"]
+[node name="CCwise2" type="Button" parent="."]
 layout_mode = 0
 offset_left = 968.0
-offset_top = 8.0
+offset_top = 192.0
 offset_right = 1163.0
-offset_bottom = 80.0
+offset_bottom = 264.0
 theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Counterclockwise"
 
+[node name="BowlValues" type="Label" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 516.0
+offset_right = 560.0
+offset_bottom = 1080.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+
 [node name="Clockwise2" type="Button" parent="."]
 layout_mode = 0
-offset_left = 560.0
-offset_top = 136.0
-offset_right = 736.0
-offset_bottom = 208.0
+offset_left = 568.0
+offset_top = 192.0
+offset_right = 768.0
+offset_bottom = 264.0
 theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Clockwise"
 
@@ -915,5 +953,5 @@ text = "Clockwise"
 [connection signal="toggled" from="CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="Clockwise" to="." method="_on_button_pressed" binds= ["cw"]]
 [connection signal="pressed" from="CCwise" to="." method="_on_button_pressed" binds= ["ccw"]]
-[connection signal="pressed" from="BowlValues/CCwise" to="." method="_on_button_pressed" binds= ["ccw"]]
+[connection signal="pressed" from="CCwise2" to="." method="_on_button_pressed" binds= ["ccw"]]
 [connection signal="pressed" from="Clockwise2" to="." method="_on_button_pressed" binds= ["cw"]]
