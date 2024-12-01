@@ -18,8 +18,74 @@
 
 [sub_resource type="GDScript" id="GDScript_pa3jy"]
 script/source = "#make a large dining table for the background
+# this project could really use a game state class, where the real game is an object, as well as simulated ones where you rotate the board.
 
+class_name DimSum
 extends Control
+
+enum Items {
+	SMALL_SESAME,
+	LARGE_SESAME,
+	CHIVE,
+	EGG,
+	SHRIMP,
+	TURNIP,
+	SHUMAI,
+	STEAMED,
+	CHOPSTICK,
+	NOTHING
+}
+
+enum Players {
+	PLAYER1,
+	PLAYER2,
+	PLAYER3,
+	PLAYER4,
+	PLAYER5,
+	PLAYER6,
+	NOBODY
+}
+
+const NUM_BOWLS = 6
+const NUM_PLAYERS = 2
+
+
+class Bowl:
+	var index:int = -1 # don't really need this because of the position in the game state array
+	var item:Items = Items.NOTHING
+	var location:int = -1
+
+
+class Inventory:
+	# this should just be a dictionary instead
+	var small_sesame := 0
+	var large_sesame := 0
+	var chive := 0
+	var egg := 0
+	var shrimp := 0
+	var turnip := 0
+	var shumai := 0
+	var steamed := 0
+	var chopstick := 0
+	var bun := false
+	
+	func array() -> Array:
+		return [small_sesame, large_sesame, chive, egg, shrimp, turnip, shumai, steamed, chopstick, bun]
+	
+	func card_count() -> int:
+		return small_sesame + large_sesame + chive + egg + shrimp + turnip + shumai + steamed
+
+
+class GameState:
+	var player:Players = Players.NOBODY
+	var bowls:Array[Bowl] = []
+	var inventories:Array[Inventory] = []
+	
+	func _init():
+		for i in NUM_BOWLS:
+			bowls.append(Bowl.new())
+		for i in NUM_PLAYERS:
+			inventories.append(Inventory.new())
 
 
 @onready var position_markers = [$Position0, $Position1, $Position2, $Position3, $Position4, $Position5]
@@ -90,9 +156,8 @@ func update_inventory_text(player:int = Global.current_player) -> void:
 	inventory_texts[player].clear()
 	for item in Global.square_items.size(): # this should prob be number of elements in [current_player][i]. number of total items.
 		counter = 0
-		while counter < Global.inventories[player][item]:
+		for UNUSED in Global.inventories[player][item]:
 			inventory_texts[player].add_image(Global.square_items[item])
-			counter += 1
 
 
 
