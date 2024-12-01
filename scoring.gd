@@ -149,10 +149,11 @@ func mod_steamed_value(quant:int) -> float:
 
 # adds a bonus to their value so that they are less likely to get used up. bonus decays over time.
 func mod_chopstick_value(chopstick_count:int, perspective:Global.Players) -> float:
-	return chopstick_value(chopstick_count) * (1 + (12 - foods_possessed(perspective)) * .4)
+	return chopstick_value(chopstick_count) * (1 + (12 - foods_possessed(perspective)) * .3)
 
 func foods_possessed(player:Global.Players) -> int:
 	var count = 0
 	for n in 8:
 		count += Global.inventories[player][n]
+	print(Global.player_string(player) + str(count))
 	return count

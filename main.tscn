@@ -206,8 +206,11 @@ func _on_menu_button_food_taken(bowl: int, taken: Global.Items, revealed: Global
 		Global.inventories[Global.current_player][taken] += 1
 		take_chopsticks(bowl)
 		update_score_text()
+		update_inventory_text()
 		moving_item.move_item(taken, position_markers[Global.bowls[bowl].rotational_position].position, inventory_texts[Global.current_player].position)
 		print_status()
+		advance_turn()
+		
 	Global.on_board[bowl] = revealed
 	# make new function that does the following: increment the appropriate item, updates the counter. counter needs to be in lockstep with the array variable. and also calculate poitn value.
 
@@ -226,6 +229,10 @@ func update_inventory_text(player:int = Global.current_player) -> void:
 
 func update_score_text() -> void:
 	var text:String
+	
+	if is_game_over():
+		score_info.set_text(\"Game Over!\")
+		return
 	
 	# this is really ugly
 	for player in Global.inventories.size():
@@ -254,17 +261,7 @@ func inc_turn() -> void:
 
 func _on_button_pressed(arg1:String) -> void:
 	if arg1 == \"turn\":
-		if !Global.game_started:
-			Global.game_started = true
-			end_turn.set_text(\"End Turn for \" + Global.player_string(Global.current_player))
-			print(\"Game Start\")
-		else:
-			if is_game_over():
-				end_turn.set_text(\"Game Over\")
-				return
-			inc_turn()
-			end_turn.set_text(\"End Turn for \" + Global.player_string(Global.current_player))
-		update_bowl_values()
+		advance_turn()
 	if arg1 == \"ccw\":
 		print(\"ccw button pressed\")
 		rotate_board(-1)
@@ -274,8 +271,22 @@ func _on_button_pressed(arg1:String) -> void:
 	update_score_text()
 
 
+func advance_turn() -> void:
+	if !Global.game_started:
+		Global.game_started = true
+		end_turn.set_text(\"End Turn for \" + Global.player_string(Global.current_player))
+		print(\"Game Start\")
+	else:
+		if is_game_over():
+			end_turn.set_text(\"Game Over\")
+			return
+		inc_turn()
+		end_turn.set_text(\"End Turn for \" + Global.player_string(Global.current_player))
+	update_bowl_values()
+
+
 func is_game_over() -> bool:
-	for n in Global.inventories.size():
+	for n in Global.num_players:
 		if Scoring.foods_possessed(n) < 12:
 			return false
 	return true
@@ -723,7 +734,9 @@ offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
-theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
 
@@ -735,7 +748,9 @@ offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
-theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
 bowl = 1
@@ -748,7 +763,9 @@ offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
-theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
 bowl = 2
@@ -761,7 +778,9 @@ offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
-theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
 bowl = 3
@@ -774,7 +793,9 @@ offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
-theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
 bowl = 4
@@ -787,7 +808,9 @@ offset_right = 936.0
 offset_bottom = 368.0
 pivot_offset = Vector2(40, 288)
 mouse_filter = 2
-theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
 script = ExtResource("12_1jv5p")
 bowl = 5
@@ -844,11 +867,14 @@ script = ExtResource("15_kwwil")
 
 [node name="ScoreInfo" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1416.0
-offset_top = 56.0
-offset_right = 1632.0
-offset_bottom = 160.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+offset_left = 1312.0
+offset_top = 176.0
+offset_right = 1672.0
+offset_bottom = 392.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 28
 
 [node name="InventoryP2" type="RichTextLabel" parent="." groups=["inventories"]]
 layout_mode = 0
@@ -925,7 +951,9 @@ offset_left = 16.0
 offset_top = 516.0
 offset_right = 560.0
 offset_bottom = 1080.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 20
 
 [node name="Clockwise2" type="Button" parent="."]

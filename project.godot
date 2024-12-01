@@ -34,3 +34,7 @@ movie_writer/movie_file="/home/linu/Desktop/movie.avi"
 
 bowls=""
 rotators=""
+
+[rendering]
+
+environment/defaults/default_clear_color=Color(0.172549, 0.14902, 0.235294, 1)
