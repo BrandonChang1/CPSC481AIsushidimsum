@@ -37,12 +37,12 @@ enum Items {
 }
 
 enum Players {
-	PLAYER1,
-	PLAYER2,
-	PLAYER3,
-	PLAYER4,
-	PLAYER5,
-	PLAYER6,
+	ONE,
+	TWO,
+	THREE,
+	FOUR,
+	FIVE,
+	SIX,
 	NOBODY
 }
 
@@ -53,7 +53,12 @@ const NUM_PLAYERS = 2
 class Bowl:
 	var index:int = -1 # don't really need this because of the position in the game state array
 	var item:Items = Items.NOTHING
+	var chopsticks:int = 0
 	var location:int = -1
+	
+	func _init(arg1:int):
+		location = arg1
+		index = arg1
 
 
 class Inventory:
@@ -72,20 +77,73 @@ class Inventory:
 	func array() -> Array:
 		return [small_sesame, large_sesame, chive, egg, shrimp, turnip, shumai, steamed, chopstick, bun]
 	
-	func card_count() -> int:
+	func food_count() -> int:
 		return small_sesame + large_sesame + chive + egg + shrimp + turnip + shumai + steamed
 
 
 class GameState:
-	var player:Players = Players.NOBODY
+	static var closest_bowls:Dictionary = {Players.ONE: 3, Players.TWO: 0}
+	
 	var bowls:Array[Bowl] = []
 	var inventories:Array[Inventory] = []
+	var bun_in_center:bool = true
+	var in_progress:bool = false
+	var current_player:Players = Players.NOBODY
 	
 	func _init():
 		for i in NUM_BOWLS:
-			bowls.append(Bowl.new())
+			bowls.append(Bowl.new(i))
 		for i in NUM_PLAYERS:
 			inventories.append(Inventory.new())
+	
+	## positive for CW, negative for CCW
+	func rotate(arg1:int) -> void:
+		assert(arg1 != 0)
+		for i in bowls.size():
+			for n in absi(arg1):
+				if in_progress:
+					inventories[current_player].chopstick -= 1
+					bowls[i].chopsticks += 1
+				if arg1 > 0:
+					bowls[i].location += 1
+				else:
+					bowls[i].location += -1
+				if bowls[i].location == NUM_BOWLS:
+					bowls[i].location = 0
+				if bowls[i].location == -1:
+					bowls[i].location = NUM_BOWLS - 1
+				assert(bowls[i].location > 0 || bowls[i].location < NUM_BOWLS)
+	
+	# these following two functions will always output the same thing based on location. it doesnt use the bowl.
+	# this could be stored as static data. only need to compute once.
+	# another function would be good that uses the bowl as an argument.
+	static func distance(player:int, location:int) -> int:
+		var distances:Array[int] = []
+		var counter:int = int(NUM_BOWLS / 2)
+		var mod = -1
+		for i in NUM_BOWLS:
+			distances.append(counter)
+			if counter == 0:
+				mod = 1
+			counter += mod
+		while distances[closest_bowls[player]] != 0:
+			var temp = distances.pop_back()
+			distances.push_front(temp)
+		return distances[location]
+	
+	func current_distance(location:int) -> int:
+		var distances:Array[int] = []
+		var counter:int = int(NUM_BOWLS / 2)
+		var mod = -1
+		for i in NUM_BOWLS:
+			distances.append(counter)
+			if counter == 0:
+				mod = 1
+			counter += mod
+		while distances[closest_bowls[current_player]] != 0:
+			var temp = distances.pop_back()
+			distances.push_front(temp)
+		return distances[location]
 
 
 @onready var position_markers = [$Position0, $Position1, $Position2, $Position3, $Position4, $Position5]
@@ -579,13 +637,14 @@ metadata/current_item = 0
 [node name="EndTurn" type="Button" parent="."]
 top_level = true
 layout_mode = 0
-offset_left = 576.0
-offset_top = 924.0
-offset_right = 1151.0
-offset_bottom = 1072.0
+offset_left = 1376.0
+offset_top = 516.0
+offset_right = 1688.0
+offset_bottom = 1080.0
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Start Game"
+autowrap_mode = 2
 
 [node name="CheckBox" type="CheckBox" parent="."]
 visible = false
@@ -612,10 +671,10 @@ text = "Automatically Switch Turns"
 
 [node name="Clockwise" type="Button" parent="."]
 layout_mode = 0
-offset_left = 576.0
-offset_top = 784.0
-offset_right = 739.0
-offset_bottom = 862.0
+offset_left = 968.0
+offset_top = 880.0
+offset_right = 1168.0
+offset_bottom = 952.0
 theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Clockwise"
 
@@ -706,10 +765,10 @@ texture = ExtResource("12_kd18h")
 
 [node name="CCwise" type="Button" parent="."]
 layout_mode = 0
-offset_left = 988.0
-offset_top = 784.0
-offset_right = 1151.0
-offset_bottom = 862.0
+offset_left = 568.0
+offset_top = 872.0
+offset_right = 760.0
+offset_bottom = 944.0
 theme_override_styles/normal = ExtResource("11_xn3s5")
 text = "Counterclockwise"
 
@@ -725,11 +784,18 @@ mouse_filter = 2
 texture = ExtResource("14_sgbbm")
 
 [node name="InventoryP1" type="RichTextLabel" parent="." groups=["inventories"]]
-layout_mode = 0
-offset_left = 1336.0
-offset_top = 912.0
-offset_right = 1680.0
-offset_bottom = 1080.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -66.0
+offset_top = 306.0
+offset_right = 116.0
+offset_bottom = 522.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="MovingItem" type="TextureRect" parent="."]
 visible = false
@@ -740,18 +806,18 @@ script = ExtResource("15_kwwil")
 
 [node name="ScoreInfo" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1392.0
-offset_top = 320.0
-offset_right = 1608.0
-offset_bottom = 424.0
+offset_left = 1416.0
+offset_top = 56.0
+offset_right = 1632.0
+offset_bottom = 160.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 
 [node name="InventoryP2" type="RichTextLabel" parent="." groups=["inventories"]]
 layout_mode = 0
-offset_left = 696.0
-offset_top = 4.0
-offset_right = 1040.0
-offset_bottom = 172.0
+offset_left = 796.0
+offset_top = 16.0
+offset_right = 972.0
+offset_bottom = 188.0
 
 [node name="Position0" type="Control" parent="."]
 layout_mode = 3
@@ -815,6 +881,24 @@ offset_bottom = 776.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 24
 
+[node name="CCwise" type="Button" parent="BowlValues"]
+layout_mode = 0
+offset_left = 968.0
+offset_top = 8.0
+offset_right = 1163.0
+offset_bottom = 80.0
+theme_override_styles/normal = ExtResource("11_xn3s5")
+text = "Counterclockwise"
+
+[node name="Clockwise2" type="Button" parent="."]
+layout_mode = 0
+offset_left = 560.0
+offset_top = 136.0
+offset_right = 736.0
+offset_bottom = 208.0
+theme_override_styles/normal = ExtResource("11_xn3s5")
+text = "Clockwise"
+
 [connection signal="about_to_popup" from="Bowl0" to="Bowl0" method="_on_about_to_popup"]
 [connection signal="food_taken" from="Bowl0" to="." method="_on_menu_button_food_taken"]
 [connection signal="about_to_popup" from="Bowl1" to="Bowl1" method="_on_about_to_popup"]
@@ -831,3 +915,5 @@ theme_override_font_sizes/font_size = 24
 [connection signal="toggled" from="CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="Clockwise" to="." method="_on_button_pressed" binds= ["cw"]]
 [connection signal="pressed" from="CCwise" to="." method="_on_button_pressed" binds= ["ccw"]]
+[connection signal="pressed" from="BowlValues/CCwise" to="." method="_on_button_pressed" binds= ["ccw"]]
+[connection signal="pressed" from="Clockwise2" to="." method="_on_button_pressed" binds= ["cw"]]
