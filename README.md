@@ -6,7 +6,7 @@ Fall 2024 CPSC 481-02: Artificial Intelligence
 Professor Hamid Ebrahimi
 
 ## Project Setup
-This project uses Godot 4.3. It can be downloaded from https://godotengine.org/download/
+This project uses Godot 4.3. It can be downloaded from https://godotengine.org/download/ The C# compatible version is not necessary, because this project uses GDScript, not C#.
 Open the project's folder or project.godot
 
 ## Project Viewing, Editing, and Compiling
