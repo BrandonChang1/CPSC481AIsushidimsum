@@ -728,94 +728,101 @@ text = "Clockwise"
 
 [node name="Chopstick0" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 832.0
-offset_top = 256.0
-offset_right = 936.0
-offset_bottom = 368.0
-pivot_offset = Vector2(40, 288)
+offset_left = 816.0
+offset_top = 240.0
+offset_right = 920.0
+offset_bottom = 380.0
+pivot_offset = Vector2(48, 304)
 mouse_filter = 2
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
 script = ExtResource("12_1jv5p")
 
 [node name="Chopstick1" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 832.0
-offset_top = 256.0
-offset_right = 936.0
-offset_bottom = 368.0
-pivot_offset = Vector2(40, 288)
+offset_left = 816.0
+offset_top = 240.0
+offset_right = 920.0
+offset_bottom = 380.0
+pivot_offset = Vector2(48, 304)
 mouse_filter = 2
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
 script = ExtResource("12_1jv5p")
 bowl = 1
 
 [node name="Chopstick2" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 832.0
-offset_top = 256.0
-offset_right = 936.0
-offset_bottom = 368.0
-pivot_offset = Vector2(40, 288)
+offset_left = 816.0
+offset_top = 240.0
+offset_right = 920.0
+offset_bottom = 380.0
+pivot_offset = Vector2(48, 304)
 mouse_filter = 2
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
 script = ExtResource("12_1jv5p")
 bowl = 2
 
 [node name="Chopstick3" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 824.0
-offset_top = 256.0
-offset_right = 936.0
-offset_bottom = 368.0
-pivot_offset = Vector2(40, 288)
+offset_left = 816.0
+offset_top = 240.0
+offset_right = 920.0
+offset_bottom = 380.0
+pivot_offset = Vector2(48, 304)
 mouse_filter = 2
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
 script = ExtResource("12_1jv5p")
 bowl = 3
 
 [node name="Chopstick4" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 832.0
-offset_top = 256.0
-offset_right = 936.0
-offset_bottom = 368.0
-pivot_offset = Vector2(40, 288)
+offset_left = 816.0
+offset_top = 240.0
+offset_right = 920.0
+offset_bottom = 380.0
+pivot_offset = Vector2(48, 304)
 mouse_filter = 2
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
 script = ExtResource("12_1jv5p")
 bowl = 4
 
 [node name="Chopstick5" type="RichTextLabel" parent="." groups=["chopsticks", "rotators"]]
 layout_mode = 0
-offset_left = 832.0
-offset_top = 256.0
-offset_right = 936.0
-offset_bottom = 368.0
-pivot_offset = Vector2(40, 288)
+offset_left = 816.0
+offset_top = 240.0
+offset_right = 920.0
+offset_bottom = 380.0
+pivot_offset = Vector2(32, 304)
 mouse_filter = 2
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
 script = ExtResource("12_1jv5p")
 bowl = 5
 
 [node name="SteamedBun" type="TextureRect" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 796.0
 offset_top = 480.0
@@ -857,12 +864,14 @@ offset_right = 116.0
 offset_bottom = 522.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="MovingItem" type="TextureRect" parent="."]
 visible = false
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
+mouse_filter = 2
 script = ExtResource("15_kwwil")
 
 [node name="ScoreInfo" type="Label" parent="."]
@@ -882,6 +891,7 @@ offset_left = 787.0
 offset_top = 16.0
 offset_right = 963.0
 offset_bottom = 188.0
+mouse_filter = 2
 
 [node name="Position0" type="Control" parent="."]
 layout_mode = 3

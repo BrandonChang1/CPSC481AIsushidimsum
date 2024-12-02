@@ -6,7 +6,7 @@ extends RichTextLabel
 var chopsticks_image = preload("res://images/chopsticks_sq.png")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	starting_text()
+	update()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -25,6 +25,12 @@ func update() -> void:
 		self.add_image(chopsticks_image)
 	if chopsticks > 1:
 		self.add_text(" x"+str(chopsticks))
+	ending_text()
 
 func starting_text() -> void:
-	self.add_text("B" + str(bowl) + " ")
+	self.append_text("[center]B" + str(bowl) + "\n")
+
+func ending_text() -> void:
+	pass
+	#if chopsticks > 1:
+		#self.append_text("[/center]")
