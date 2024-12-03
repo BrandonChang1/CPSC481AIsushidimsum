@@ -25,7 +25,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	
 	if moving == true:
-		self.position = self.position.move_toward(target, delta * 4000)
+		self.position = self.position.move_toward(target, delta * 2000)
 		if self.position == target:
 			done_moving()
 
