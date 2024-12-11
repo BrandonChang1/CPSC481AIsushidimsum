@@ -6,16 +6,16 @@ extends Node
 func calc_score(inventory: Array) -> int:
 	var score:int = 0
 	
-	score += small_value(inventory[Global.Items.SMALL_SESAME])
-	score += large_value(inventory[Global.Items.LARGE_SESAME])
-	score += chive_value(inventory[Global.Items.CHIVE])
-	score += egg_value(inventory[Global.Items.EGG])
-	score += shrimp_value(inventory[Global.Items.SHRIMP])
-	score += turnip_value(inventory[Global.Items.TURNIP])
-	score += shumai_value(inventory[Global.Items.SHUMAI])
-	score += steamed_value(inventory[Global.Items.STEAMED])
+	score += small_score(inventory[Global.Items.SMALL_SESAME])
+	score += large_score(inventory[Global.Items.LARGE_SESAME])
+	score += chive_score(inventory[Global.Items.CHIVE])
+	score += egg_score(inventory[Global.Items.EGG])
+	score += shrimp_score(inventory[Global.Items.SHRIMP])
+	score += turnip_score(inventory[Global.Items.TURNIP])
+	score += shumai_score(inventory[Global.Items.SHUMAI])
+	score += steamed_score(inventory[Global.Items.STEAMED])
 	# special plates TODO
-	score += chopstick_value(inventory[Global.Items.CHOPSTICK])
+	score += chopstick_score(inventory[Global.Items.CHOPSTICK])
 	
 	return score
 
@@ -45,22 +45,22 @@ func expected_value(bowl: int, inventory:Array, perspective:Global.Players) -> f
 
 
 ## 1 point each
-func small_value(quant:int) -> int:
+func small_score(quant:int) -> int:
 	assert(quant >= 0)
 	return quant
 
 ## 2 points each
-func large_value(quant:int) -> int:
+func large_score(quant:int) -> int:
 	assert(quant >= 0)
 	return quant * 2
 
 ## 4 points per set of 2
-func chive_value(quant:int) -> int:
+func chive_score(quant:int) -> int:
 	assert(quant >= 0)
 	return int(quant/2) * 4
 
 ## 1 point for 1, 2 points for 2, 5 points for 3, 9 points for 4, 15 points for 5+
-func egg_value(quant:int) -> int:
+func egg_score(quant:int) -> int:
 	assert(quant >= 0)
 	match quant:
 		0:
@@ -77,19 +77,19 @@ func egg_value(quant:int) -> int:
 			return 15
 
 ## 7 points per set of 3
-func shrimp_value(quant:int) -> int:
+func shrimp_score(quant:int) -> int:
 	assert(quant >= 0)
 	return int( quant / 3 ) * 7	# can also calculate using modulo. subtract modulus then divide.
 
 ## 2 points each if odd amount
-func turnip_value(quant:int) -> int:
+func turnip_score(quant:int) -> int:
 	assert(quant >= 0)
 	if quant % 2:
 		return quant * 2
 	return 0
 
 ## 12 points per set of 4
-func shumai_value(quant:int) -> int:
+func shumai_score(quant:int) -> int:
 	assert(quant >= 0)
 	return int( quant / 4 ) * 12
 
@@ -98,7 +98,7 @@ func shumai_value(quant:int) -> int:
 # var steamed_counter: Array[Array] = []
 # for i in 13:
 # steamed_counter.append([])
-func steamed_value(quant:int) -> int:
+func steamed_score(quant:int) -> int:
 	assert(quant >= 0)
 	var steamed_max = 0
 	var steamed_min = 0
@@ -116,40 +116,40 @@ func steamed_value(quant:int) -> int:
 	return score
 
 ## 1 point per set of 2
-func chopstick_value(quant:int) -> int:
+func chopstick_score(quant:int) -> int:
 	assert(quant >= 0)
 	return int( quant / 2 )
 
 
 
 func mod_small_value(quant:int) -> float:
-	return small_value(quant)
+	return small_score(quant)
 
 func mod_large_value(quant:int) -> float:
-	return large_value(quant)
+	return large_score(quant)
 
 func mod_chive_value(quant:int) -> float:
-	return chive_value(quant)
+	return chive_score(quant)
 
 # bonus for more eggs on the board and in inventory. no bonus if already have 5.
 func mod_egg_value(quant:int) -> int:
-	return egg_value(quant)
+	return egg_score(quant)
 
 func mod_shrimp_value(quant:int) -> float:
-	return shrimp_value(quant)
+	return shrimp_score(quant)
 
 func mod_turnip_value(quant:int) -> float:
-	return turnip_value(quant)
+	return turnip_score(quant)
 
 func mod_shumai_value(quant:int) -> float:
-	return shumai_value(quant)
+	return shumai_score(quant)
 
 func mod_steamed_value(quant:int) -> float:
-	return steamed_value(quant)
+	return steamed_score(quant)
 
 # adds a bonus to their value so that they are less likely to get used up. bonus decays over time.
 func mod_chopstick_value(chopstick_count:int, perspective:Global.Players) -> float:
-	return chopstick_value(chopstick_count) * (1 + (12 - foods_possessed(perspective)) * .3)
+	return chopstick_score(chopstick_count) * (1 + (12 - foods_possessed(perspective)) * .3)
 
 func foods_possessed(player:Global.Players) -> int:
 	var count = 0
