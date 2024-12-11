@@ -25,6 +25,7 @@ func expected_value(bowl: int, inventory:Array, perspective:Global.Players) -> f
 	
 	var hypothetical_inventory = inventory.duplicate(true) # not sure if this is necessary, but need to make deep copy
 	if bowl != -1:
+		# todo store which card is being added in the hypothetical inventory.
 		hypothetical_inventory[Global.bowls[bowl].current_item] += 1
 		hypothetical_inventory[Global.Items.CHOPSTICK] -= Global.distances[perspective][bowl]
 		hypothetical_inventory[Global.Items.CHOPSTICK] += Global.chopsticks[bowl].chopsticks
@@ -131,9 +132,10 @@ func mod_large_value(quant:int) -> float:
 func mod_chive_value(quant:int) -> float:
 	return chive_score(quant)
 
-# bonus for more eggs on the board and in inventory. no bonus if already have 5.
+# bonus multiplier for more eggs on the board. should give a bonus to the value if the added card is an egg, and the bonus depends on how many other eggs are on the board. However, the code is too messy.
 func mod_egg_value(quant:int) -> int:
-	return egg_score(quant)
+	var eggs_on_board = Global.on_board.count(Global.Items.EGG)
+	return egg_score(quant) * (1 + .5 * eggs_on_board)
 
 func mod_shrimp_value(quant:int) -> float:
 	return shrimp_score(quant)
